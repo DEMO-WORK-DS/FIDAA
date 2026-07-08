@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: EUPL-1.2-only
+# Copyright (C) 2026 FIDAA contributors
+# Licensed under the EUPL, Version 1.2 only. See: https://eupl.eu/1.2/en/
+
+{$DOMAIN:localhost:80} {
+    reverse_proxy app:8000
+}

@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: EUPL-1.2-only
+# Copyright (C) 2026 FIDAA contributors
+# Licensed under the EUPL, Version 1.2 only. See: https://eupl.eu/1.2/en/
+
+services:
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      DOMAIN: "${DOMAIN:-localhost:80}"
+    networks:
+      - frontend
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - path: secrets.env
+        required: false
+    environment:
+      PYTHONUNBUFFERED: "1"
+      DEFAULT_MODEL: "${DEFAULT_MODEL:-Qwen-3.6}"
+      ASSISTANT_NAME: "${ASSISTANT_NAME:-FIDAA}"
+      # DATABASE_URL defaults to the local postgres service.
+      # If POSTGRES_PASSWORD is changed in secrets.env, update DATABASE_URL too.
+      # Set DATABASE_URL directly to use an external database.
+      DATABASE_URL: "${DATABASE_URL:-postgresql://appuser:change-me@postgres:5432/chat}"
+      LLM_URL: "${LLM_URL:-https://api.openai.com/v1}"
+      LOG_LEVEL: "${LOG_LEVEL:-INFO}"
+      MAX_PASSWORD_LENGTH: "${MAX_PASSWORD_LENGTH:-128}"
+      MAX_MESSAGE_LENGTH: "${MAX_MESSAGE_LENGTH:-4000}"
+      # CHAINLIT_AUTH_SECRET is auto-generated at runtime if unset.
+      # Set it in secrets.env to persist sessions across container restarts.
+      # PROXY_URL: socks5://vpn:8889  # set in secrets.env when VPN is enabled
+      # DOCUMENTS_PATH: /app/documents  # optional: folder of .md files for document search
+    networks:
+      - frontend
+      - vpn_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      vpn:
+        condition: service_started
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    env_file:
+      - path: secrets.env
+        required: false
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER:-appuser}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-change-me}"
+      POSTGRES_DB: "${POSTGRES_DB:-chat}"
+    networks:
+      - frontend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-appuser} -d ${POSTGRES_DB:-chat}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  vpn:
+    image: wazum/openconnect-proxy:latest
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - path: secrets.env
+        required: false
+    environment:
+      # VPN credentials come from secrets.env (OPENCONNECT_URL, OPENCONNECT_USER, OPENCONNECT_PASSWORD).
+      OPENCONNECT_OPTIONS: "--protocol=gp --no-dtls"
+      VPN_SPLIT: "1"
+      # VPN_ROUTES comes from secrets.env via env_file
+    networks:
+      - vpn_net
+    restart: unless-stopped
+
+networks:
+  frontend:
+    driver: bridge
+  vpn_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

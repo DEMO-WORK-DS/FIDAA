@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: EUPL-1.2-only
+# Copyright (C) 2026 FIDAA contributors — https://eupl.eu/1.2/en/
+
+.venv/
+.uv-cache/
+__pycache__/
+notes/
+*.pyc
+*.db
+*.tar.gz
+.env
+secrets.env
+.git/
+.gitignore
+.files/
+migrations/*.py
+!migrations/__init__.py

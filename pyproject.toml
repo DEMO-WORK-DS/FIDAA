@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: EUPL-1.2-only
+# Copyright (C) 2026 FIDAA contributors — https://eupl.eu/1.2/en/
+
+[project]
+name = "chainlit-rag-chat"
+version = "0.1.0"
+description = "Chainlit RAG Agent with OpenAI-native streaming + LangChain RAG"
+readme = "README.md"
+license = "EUPL-1.2-only"
+license-files = ["LICENSE"]
+requires-python = ">=3.13"
+dependencies = [
+    "chainlit",
+    "bcrypt",
+    "langchain",
+    "langchain-openai",
+    "langchain-text-splitters",
+    "langchain-community",
+    "langchain-postgres",
+    "openai",
+    "httpx[socks]",
+    "email-validator",
+    "peewee",
+    "peewee-migrate",
+    "psycopg2-binary",
+]
+
+[tool.uv]
+managed = true
+package = false
+
+# uv.lock is checked into git. It pins all transitive deps and hashes,
+# ensuring identical docker builds across machines (uv sync --locked).
+# Regenerate with `uv lock` whenever packages should be updated.
+
+[dependency-groups]
+dev = [
+    "types-peewee>=4.0.5.20260518",
+]
