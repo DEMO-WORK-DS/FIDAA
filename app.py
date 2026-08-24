@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 LLM_URL = os.environ["LLM_URL"]
 LLM_KEY = os.environ["LLM_KEY"]
-DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "Qwen-3.6")
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "Qwen-3.8")
 ASSISTANT_NAME = os.getenv("ASSISTANT_NAME", "Assistant")
 
 if not os.environ.get("CHAINLIT_AUTH_SECRET"):
@@ -309,6 +309,7 @@ def _get_embeddings():
             model=EMBEDDING_MODEL,
             check_embedding_ctx_length=False,
             tiktoken_enabled=False,
+            chunk_size=32,
         )
         if PROXY_URL:
             kwargs["http_client"] = DefaultHttpxClient(proxy=PROXY_URL)
@@ -412,12 +413,21 @@ def strip_reasoning_tags(text: str) -> str:
 # Model list
 # ---------------------------------------------------------------------------
 async def _fetch_models():
-    """Fetch available models from the API server."""
+    """Fetch models usable for agentic chat (mode='chat' + function calling + reasoning)."""
     try:
         client = _make_openai_client(timeout=10.0)
-        models = await client.models.list()
-        return [m.id for m in models.data]
-    except Exception:
+        response = await client.get("/model/info", cast_to=object)
+        agentic_models = [
+            entry["model_name"]
+            for entry in response.get("data", [])
+            if (info := entry.get("model_info", {})).get("mode") == "chat"
+            and info.get("supports_function_calling")
+            and info.get("supports_reasoning")
+        ]
+        return agentic_models or [DEFAULT_MODEL]
+    except Exception as e:
+        logger.error("Model List not loaded")
+        logger.error(e)
         return [DEFAULT_MODEL]
 
 
