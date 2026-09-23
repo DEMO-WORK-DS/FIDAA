@@ -1,6 +1,6 @@
 # FIDAA — Fachinformation Digitale Aufsuchende Arbeit
 
-The knowledge base of the [DEMO-WORK](https://h2.de/) project on
+The knowledge base of the [DEMO-WORK](https://demo-work.h2.de) project on
 **Digital Streetwork** (aufsuchende soziale Arbeit in digitalen Räumen),
 packaged so that **any AI agent** can use it: as an [MCP](https://modelcontextprotocol.io)
 server (tools + prompts), or by simply reading `knowledge/`.
@@ -30,6 +30,7 @@ Queries in **German** give the best recall.
 ## Quickstart (laptop)
 
 ```bash
+git clone https://github.com/DEMO-WORK-DS/FIDAA.git && cd FIDAA
 cp secrets.env.example secrets.env   # fill LLM_URL / LLM_KEY / EMBEDDING_MODEL
 uv sync
 uv run server/main.py                              # stdio (for an agent)

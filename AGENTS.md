@@ -36,8 +36,11 @@ usage guide).
   warns at startup for chunks above `MAX_CHUNK_CHARS` (~24k chars). When
   restructuring `knowledge/*.md`, keep chapters under that limit.
 - `_split_markdown` in `server/main.py` is an **exact port** of the
-  `MarkdownHeaderTextSplitter` semantics the FIDAA-DEMO runs (byte-identical
-  chunks). If one changes, change both.
+  `MarkdownHeaderTextSplitter` semantics (langchain-text-splitters 1.1.2,
+  the version the pre-M2 demo ran; the port was made by reading that
+  source). FIDAA-DEMO's M2 H2 starter splitter is a second, independent
+  port of the same behavior. The two are verified byte-identical — if one
+  changes, change both and re-verify the chunk outputs.
 - The server rebuilds its in-memory index on every startup (parity with the
   demo, which re-embeds into PGVector on every boot). Do **not** add
   persistence to the server.
