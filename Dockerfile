@@ -31,7 +31,10 @@ RUN uv sync --locked --no-dev --no-install-project
 # Add venv to PATH
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Knowledge base + server code (baked into the image; no volume mounts needed)
+# Knowledge base + server code. Baked in so the image also works
+# standalone (`docker run`, future registry image). In the FIDAA-DEMO
+# deployment the working tree is mounted over /app (`./fidaa:/app:ro`),
+# so knowledge updates need only a pull + restart — no rebuild.
 COPY knowledge ./knowledge
 COPY server ./server
 COPY LICENSE ./LICENSE
