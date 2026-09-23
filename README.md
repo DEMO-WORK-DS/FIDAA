@@ -33,9 +33,10 @@ sociology of technology, and computer science / AI research:
 - **Prof. Dr. Nele Wulf** (katho Aachen) — professor for digitalization
   and social work; leads the consolidation of scientific and practical
   findings; responsible for the concept and evaluation of FIDAA.
-- **Christina Dinar** (h2; PhD at KHSB Berlin / TU Berlin) — research
-  associate; co-developed the "Digital Streetwork" concept; doctoral
-  research on digital streetwork as outreach work in social media.
+- **Christina Dinar** (Amadeu Antonio Stiftung; PhD at KHSB Berlin /
+  TU Berlin) — research associate; co-developed the "Digital Streetwork"
+  concept; doctoral research on digital streetwork as outreach work in
+  social media.
 - **David Döring** (h2) — research associate (computer science);
   technical implementation of the knowledge-based system; technical
   advisory for the team.
