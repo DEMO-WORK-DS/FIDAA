@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (C) 2026 FIDAA contributors
+-->
+
 **Digital Streetwork**
 
 *Thematisch gegliederte Bibliographie nach Handlungsfeldern und Zielgruppen

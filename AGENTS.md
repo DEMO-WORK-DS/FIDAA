@@ -6,7 +6,7 @@ Instructions for AI coding agents working in this repository.
 
 FIDAA (*Fachinformation Digitale Aufsuchende Arbeit*): the knowledge base of
 the DEMO-WORK project on **Digital Streetwork** (aufsuchende soziale Arbeit
-in digitalen Räumen) in `knowledge/*.md` (German, EUPL-1.2), plus a thin MCP
+in digitalen Räumen) in `knowledge/*.md` (German, CC-BY-SA-4.0), plus a thin MCP
 server (`server/main.py`, ~700 LOC) that exposes it as tools
 (`search_context`, `search_bibliography`, `list_sections`, optional
 `search_documents`), prompts (FIDAA system prompt + the 8 chat starters)
@@ -47,8 +47,9 @@ usage guide).
   persistence to the server.
 - `uv.lock` is checked into git; the Dockerfile's uv image tag must match
   the local uv that generated the lock (lockfile format).
-- EUPL-1.2 license across all files (knowledge content: EUPL-1.2, prompts.md
-  carries its own CC-BY-SA-4.0 header).
+- License split: knowledge content is **CC-BY-SA-4.0** (root `LICENSE`,
+  per-file SPDX headers in `knowledge/`); code files are
+  **EUPL-1.2-only** (per-file SPDX headers). Do not mix the two.
 
 ## Change workflow (required)
 

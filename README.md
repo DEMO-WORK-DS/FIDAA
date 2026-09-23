@@ -5,7 +5,8 @@ The knowledge base of the [DEMO-WORK](https://demo-work.h2.de) project on
 packaged so that **any AI agent** can use it: as an [MCP](https://modelcontextprotocol.io)
 server (tools + prompts), or by simply reading `knowledge/`.
 
-- `knowledge/` — the curated, expert-checked knowledge base (German, EUPL-1.2):
+- `knowledge/` — the curated, expert-checked knowledge base (German,
+  CC BY-SA 4.0):
   `kontext.md` (context database), `bibliography.md` (140+ cited sources),
   `systemprompt.md`, `prompts.md` (8 chat starters), `welcome.md`.
 - `server/main.py` — thin MCP server on the official `mcp` SDK v2
@@ -13,6 +14,47 @@ server (tools + prompts), or by simply reading `knowledge/`.
   cosine + BM25, RRF fusion) rebuilt on startup (no database, no LangChain).
 - `skills/fidaa/SKILL.md` — [Agent Skill](https://agentskills.io): usage
   guide for coding agents that open this repo directly.
+
+## Project & Team
+
+FIDAA is part of **DEMO-WORK**, a research and transfer project funded
+by the **VolkswagenStiftung** ("Transformationswissen über Demokratien
+im Wandel – transdisziplinäre Perspektiven"), carried out in cooperation
+between the **Hochschule Magdeburg-Stendal (h2)**, the **Amadeu Antonio
+Stiftung** and the **Katholische Hochschule Nordrhein-Westfalen
+(katho)**, and affiliated with the Institut für demokratische Kultur (IdK)
+at h2.
+
+The team unites scientific and practical expertise in social work,
+sociology of technology, and computer science / AI research:
+
+**Wissenschaft (research)**
+
+- **Prof. Dr. Nele Wulf** (katho Aachen) — professor for digitalization
+  and social work; leads the consolidation of scientific and practical
+  findings; responsible for the concept and evaluation of FIDAA.
+- **Christina Dinar** (h2; PhD at KHSB Berlin / TU Berlin) — research
+  associate; co-developed the "Digital Streetwork" concept; doctoral
+  research on digital streetwork as outreach work in social media.
+- **David Döring** (h2) — research associate (computer science);
+  technical implementation of the knowledge-based system; technical
+  advisory for the team.
+- **Nils Fietkau** (h2) — research associate (social work, health,
+  media); co-responsible for the empirical research on professional
+  digital streetwork practice.
+
+**Praxis (practice)**
+
+- **Cornelia Heyken** (Amadeu Antonio Stiftung) — co-developer of the
+  "Digital Streetwork" concept; analyzes the academic and formalized
+  knowledge base on digital streetwork and prepares it for the AI
+  prototype.
+- **Jerome Trebing** (Amadeu Antonio Stiftung) — violence-prevention
+  practitioner; ethnographic observation and analysis of
+  digital-streetwork practice; development of professional standards.
+
+Project information, full team bios and contact (imprint):
+<https://demo-work.h2.de> (English: <https://demo-work.h2.de/en/>)
 
 ## What the server offers
 
@@ -101,5 +143,8 @@ v1 ships **internal-only** (compose network, no token). To expose it:
 
 ## License
 
-Code and knowledge base: EUPL-1.2 (`LICENSE`). `knowledge/prompts.md`
-carries its own CC-BY-SA-4.0 header.
+Split by content type: the **knowledge content** (`knowledge/*.md`) is
+**CC BY-SA 4.0** (root `LICENSE`; each file also carries a
+`SPDX-License-Identifier: CC-BY-SA-4.0` header). The **code**
+(`server/`, `Dockerfile`, `pyproject.toml`, …) is **EUPL-1.2-only**
+(per-file SPDX headers).

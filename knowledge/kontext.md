@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (C) 2026 FIDAA contributors
+-->
+
 # Kontextdatenbank Digital Streetwork
 
 ## Was ist FIDAA? Wie funktioniert die App technisch, und wer steht hinter dem Projekt bzw. wen kann ich dazu kontaktieren?
