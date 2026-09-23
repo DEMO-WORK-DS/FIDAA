@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: EUPL-1.2-only
+# Copyright (C) 2026 FIDAA contributors — https://eupl.eu/1.2/en/
+
+[project]
+name = "fidaa"
+version = "0.1.0"
+description = "FIDAA (Fachinformation Digitale Aufsuchende Arbeit): knowledge base + MCP server for Digital Streetwork"
+readme = "README.md"
+license = "EUPL-1.2-only"
+license-files = ["LICENSE"]
+requires-python = ">=3.13"
+dependencies = [
+    # mcp v2 line (MCPServer API) — the server speaks 2026-07-28 and all
+    # earlier spec revisions, so v1-line clients (e.g. Chainlit's mcp<2)
+    # remain compatible.
+    "mcp>=2.0,<3",
+    # OpenAI-compatible client for the self-hosted embedding endpoint
+    # (Qwen3-Embedding-4B). No LangChain: the index is plain numpy.
+    "openai",
+    "numpy",
+]
+
+[dependency-groups]
+# Inspector + CLI convenience (`uv run mcp dev server/main.py`).
+# Dev-only: the Docker build uses --no-dev and stays lean.
+dev = ["mcp[cli]"]
+
+[tool.uv]
+managed = true
+package = false
+
+# uv.lock is checked into git. It pins all transitive deps and hashes,
+# ensuring identical docker builds across machines (uv sync --locked).
+# Regenerate with `uv lock` whenever packages should be updated.
