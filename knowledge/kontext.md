@@ -11,14 +11,19 @@ Einarbeitung und Reflexion: FIDAA informiert und verweist gegebenenfalls auf ext
 erbringt aber keine Beratung (keine Seelsorge, Rechtsberatung oder psychische Unterstützung), und eine
 automatisierte Kommunikation mit Adressat\*innen oder Klient\*innen ist explizit ausgeschlossen.
 
+Die Web-App ist online unter <https://fidaa.h2.de> erreichbar.
+
 **Konzept (RAG)**
 FIDAA arbeitet mit Retrieval-Augmented Generation (RAG):
 
-1. Beim Start wird die Wissensdatenbank (Markdown-Dateien) in Abschnitte zerlegt und über ein
-   Embedding-Modell in Vektoren verwandelt, die in einer Vektordatenbank (pgvector in PostgreSQL)
-   abgelegt werden.
-2. Auf jede Nutzerfrage hin werden die semantisch passendsten Abschnitte abgerufen und dem
-   Sprachmodell als Kontext mitgegeben.
+1. Beim Start wird die Wissensdatenbank (Markdown-Dateien) in Abschnitte zerlegt, über ein
+   Embedding-Modell in Vektoren verwandelt und zusätzlich mit einem BM25-Keywordindex versorgt.
+   Beide Indizes leben nur im Speicher des Wissensservers (In-Memory-Index, ohne Persistenz) und
+   werden bei jedem Start neu aufgebaut.
+2. Auf jede Nutzerfrage hin wird **hybride Suche** betrieben: die Vektor-Rangliste (Semantik) und
+   die BM25-Rangliste (exakte Stichworte und Zitate) werden über Reciprocal Rank Fusion (RRF) zu
+   einer gemeinsamen Rangliste verschmolzen; die passendsten Abschnitte werden dem Sprachmodell als
+   Kontext mitgegeben.
 3. Das Sprachmodell formuliert die Antwort ausschließlich auf Basis dieses Kontexts: Der Systemprompt
    verpflichtet es, vor jeder Antwort mindestens einmal die Wissensdatenbank zu durchsuchen und sich
    in der Antwort auf den Kontext zu beziehen. Das reduziert typische Sprachmodell-Fehler wie
@@ -28,18 +33,22 @@ FIDAA arbeitet mit Retrieval-Augmented Generation (RAG):
 
 | Baustein | Technologie |
 | --- | --- |
-| Chat-Oberfläche | Chainlit (Web-Chat mit Streaming, sichtbaren Recherche-Schritten, Feedback-Buttons und HTML-Export der Konversation) |
+| Web-App (Demo) | Chainlit (Web-Chat mit Streaming, sichtbaren Recherche-Schritten, Feedback-Buttons und HTML-Export der Konversation); die Chat-Historie liegt in PostgreSQL |
+| Wissenszugriff | MCP (Model Context Protocol): die Wissensdatenbank liegt in einem eigenen Wissenspaket und wird von einem MCP-Server als Standard-Tools an die Chat-App übergeben; die Demo verbindet sich per Streamable-HTTP |
 | Backend | Python, Abhängigkeiten verwaltet mit uv (pinned via uv.lock) |
 | Sprachmodell | OpenAI-kompatible LLM-API, bereitgestellt von der Hochschule Magdeburg-Stendal (h2.de); die h2 aktualisiert die API laufend, um jeweils die aktuellsten Open-Weight-Modelle bereitzustellen (aktuelles Standardmodell: Qwen-3.8). Beim Start erkennt die App automatisch alle nutzbaren Modelle (Chat + Tool-Nutzung + Reasoning). |
-| Agentik | OpenAI-native Function Calling – pro Nachricht sind bis zu 7 Agenten-Schritte (LLM-Aufrufe) möglich |
+| Agentik | OpenAI-native Function Calling über die MCP-Tools – pro Nachricht sind bis zu 7 Agenten-Schritte (LLM-Aufrufe) möglich |
 | Embedding | OpenAI-kompatible Embedding-API (ebenfalls über h2.de), Modell Qwen3-Embedding-4B, instruktionsbasiert: die Suchanfrage wird mit einer Aufgaben-Instruktion eingebettet |
-| Vektordatenbank | pgvector in PostgreSQL (Collections: `rag_context`, `rag_bibliography`, optional `rag_documents`) |
+| Wissens-Index | In-Memory-Hybridindex: Vektoren + BM25-Keywordindex, verschmolzen über RRF (Sammlungen: `rag_context`, `rag_bibliography`, optional `rag_documents`); wird bei jedem Start neu aufgebaut, es gibt keine persistente Vektordatenbank |
 
 **Werkzeuge (Tools) des Agenten**
 
-* `search_context`: Durchsucht die interne Wissensdatenbank zu Digital Streetwork (geprüftes Fachwissen).
-* `search_bibliography`: Durchsucht die Bibliografie nach der exakten Quellenangabe eines Werks (Autor,
-  Jahr, Titel) – wird genutzt, wenn FIDAA eine konkrete Quelle referenzieren soll.
+* `search_context`: Durchsucht die interne Wissensdatenbank nach relevantem und geprüft richtigem Kontext.
+* `search_bibliography`: Durchsucht die Bibliografie (knowledge/bibliography.md) nach der genauen
+  Quellenangabe für ein bestimmtes Werk (Autor, Jahr, Titel).
+* `list_sections`: Listet die Kapitel- und Abschnittsstruktur der Wissensdatenbank als
+  Überschriftenpfade auf (z. B. als Inhaltsverzeichnis), damit Kapitel gezielt benannt werden können,
+  bevor gesucht wird.
 * `search_documents`: Durchsucht optional ein externes Dokumentenarchiv (nur aktiv, wenn konfiguriert).
 
 **Wissensbasis**
@@ -52,6 +61,18 @@ Die Wissensdatenbank wurde vom Projekt DEMO-WORK zusammengetragen und entwickelt
   Handlungsfeldern und Zielgruppen.
 * `knowledge/systemprompt.md`: definiert Rolle und Verhalten von FIDAA (rein informativ, Sprache der
   Nutzenden spiegeln, Antworten in schlichtem Markdown).
+* Zusätzlich stellt der MCP-Server die kompletten Kapiteltexte der Kontextdatenbank als Ressourcen
+  (`fidaa://context/<Kapitel>/<Abschnitt>`) bereit – wer ein ganzes Kapitel braucht, muss es nicht
+  stückweise suchen.
+
+**Wiederverwendung: FIDAA in anderen Chatbots**
+Das Fachwissen ist bewusst als **eigenständiges, wiederverwendbares Wissenspaket** aufgebaut und nicht
+in der Web-App versteckt: Andere Chatbots und KI-Agenten können dasselbe Wissen nutzen, indem sie
+einfach auf das GitHub-Repository <https://github.com/DEMO-WORK-DS/FIDAA> zeigen – `AGENTS.md` und
+`skills/fidaa/SKILL.md` beschreiben dort die Anbindung (MCP-Server per stdio oder HTTP, oder die
+`knowledge/`-Dateien direkt lesen). Jeder so angebundene Chatbot bekommt damit dieselben
+Such-Tools, das Inhaltsverzeichnis und die Kapitel-Ressourcen – das Wissen wird einmal gepflegt
+und überall genutzt, statt es zu duplizieren.
 
 **Projekt, Software & Kontakt**
 
@@ -67,10 +88,12 @@ Die Wissensdatenbank wurde vom Projekt DEMO-WORK zusammengetragen und entwickelt
   <https://demo-work.h2.de> veröffentlicht (u. a. im Impressum und in den Team-Beschreibungen). Auf
   Nachfrage verweist FIDAA dorthin und erfindet selbst keine Kontaktdaten.
 * Die Software ist Open Source (Code: EUPL 1.2, Wissensinhalte: CC BY-SA 4.0):
-  <https://github.com/DEMO-WORK-DS/FIDAA>
+  Wissenspaket + MCP-Server: <https://github.com/DEMO-WORK-DS/FIDAA>,
+  Demo-App (Chainlit): <https://github.com/DEMO-WORK-DS/FIDAA-DEMO>,
+  Live-Demo: <https://fidaa.h2.de>.
 * Für Projektinteresse, Kooperationen oder weiterführende Informationen bitte über die Projektseite
-  <https://demo-work.h2.de> Kontakt aufnehmen; technische Fragen und Fehlermeldungen können im
-  GitHub-Repository (Issues) eingereicht werden.
+  <https://demo-work.h2.de> Kontakt aufnehmen; technische Fragen und Fehlermeldungen können in den
+  GitHub-Repositories (Issues) eingereicht werden.
 
 ## Wie kann ich Digital Streetwork gut fachlich absichern?
 
