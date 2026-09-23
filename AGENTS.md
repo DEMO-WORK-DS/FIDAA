@@ -7,9 +7,10 @@ Instructions for AI coding agents working in this repository.
 FIDAA (*Fachinformation Digitale Aufsuchende Arbeit*): the knowledge base of
 the DEMO-WORK project on **Digital Streetwork** (aufsuchende soziale Arbeit
 in digitalen Räumen) in `knowledge/*.md` (German, EUPL-1.2), plus a thin MCP
-server (`server/main.py`, ~250 LOC) that exposes it as tools
-(`search_context`, `search_bibliography`, optional `search_documents`) and
-prompts (FIDAA system prompt + the 8 chat starters). Any AI agent can use
+server (`server/main.py`, ~700 LOC) that exposes it as tools
+(`search_context`, `search_bibliography`, `list_sections`, optional
+`search_documents`), prompts (FIDAA system prompt + the 8 chat starters)
+and resources (full context-chapter texts, `fidaa://context/…`). Any AI agent can use
 this knowledge via the MCP server (stdio or streamable-http) or by reading
 `knowledge/` directly (see `skills/fidaa/SKILL.md` for the agent-facing
 usage guide).

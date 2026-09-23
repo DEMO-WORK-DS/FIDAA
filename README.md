@@ -9,8 +9,8 @@ server (tools + prompts), or by simply reading `knowledge/`.
   `kontext.md` (context database), `bibliography.md` (140+ cited sources),
   `systemprompt.md`, `prompts.md` (8 chat starters), `welcome.md`.
 - `server/main.py` — thin MCP server on the official `mcp` SDK v2
-  (`MCPServer`), stdio + streamable-http, in-memory numpy index rebuilt on
-  startup (no database, no LangChain).
+  (`MCPServer`), stdio + streamable-http, in-memory hybrid index (numpy
+  cosine + BM25, RRF fusion) rebuilt on startup (no database, no LangChain).
 - `skills/fidaa/SKILL.md` — [Agent Skill](https://agentskills.io): usage
   guide for coding agents that open this repo directly.
 
@@ -21,8 +21,10 @@ server (tools + prompts), or by simply reading `knowledge/`.
 | tool | `search_context(query)` | 4 most relevant passages, with heading paths |
 | tool | `search_bibliography(query)` | exact source citations (author/year/title) |
 | tool | `search_documents(query)` | optional — only if `DOCUMENTS_PATH` is set |
+| tool | `list_sections(collection?)` | chapter structure (heading paths), per collection |
 | prompt | `fidaa_systemprompt` | FIDAA's behavior rules (system prompt) |
 | prompt | `fidaa_starter_1…8` | the 8 chat starters, ready to send |
+| resource | `fidaa://context/<H1>/<H2>` | full chapter texts (context only) |
 | route | `GET /healthz` | index state (HTTP mode only) |
 
 Queries in **German** give the best recall.

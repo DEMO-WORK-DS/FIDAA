@@ -18,6 +18,9 @@ dependencies = [
     # (Qwen3-Embedding-4B). No LangChain: the index is plain numpy.
     "openai",
     "numpy",
+    # BM25 lexical ranking for hybrid search (R6.1): fused with the cosine
+    # scores via RRF in server/main.py. Pure Python, numpy-only dep.
+    "rank-bm25",
 ]
 
 [dependency-groups]

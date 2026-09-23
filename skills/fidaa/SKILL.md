@@ -7,7 +7,8 @@ description: >-
   Radikalisierungsprävention, digital empowerment or networking work; when
   working with FIDAA / DEMO-WORK project material; or when the FIDAA MCP
   server is connected (tools: search_context, search_bibliography,
-  search_documents; prompts: fidaa_systemprompt, fidaa_starter_1..8).
+  list_sections, search_documents; prompts: fidaa_systemprompt,
+  fidaa_starter_1..8; resources: fidaa://context/…).
 license: EUPL-1.2-only
 ---
 
@@ -27,6 +28,13 @@ reading files:
    a specific work.
 3. `search_documents(query)` — only present when the server additionally
    indexes a document archive (`DOCUMENTS_PATH`).
+4. `list_sections(collection?)` — the chapter/section structure (heading
+   paths) of a collection (`all`/`context`/`bibliography`/`documents`);
+   call it first when you want to target a chapter.
+
+If your client reads MCP **resources**, full chapter texts of the knowledge
+database are available as `fidaa://context/<H1>/<H2>` — read them instead of
+retrieving passages when you need a whole chapter.
 
 Rules (carried verbatim in the `fidaa_systemprompt` prompt):
 

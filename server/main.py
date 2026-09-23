@@ -5,15 +5,20 @@
 Exposes the FIDAA knowledge base (knowledge/*.md, Digital Streetwork) as MCP
 tools and prompts:
 
-  tools:    search_context, search_bibliography, [search_documents]
+  tools:    search_context, search_bibliography, list_sections, [search_documents]
   prompts:  fidaa_systemprompt, fidaa_starter_1 … fidaa_starter_8
+  resources: fidaa://context/<H1>/<H2> — full chapter texts (R6.6)
 
-Design (decisions Q1–Q8, see the FIDAA-DEMO repo's CURRENT_TASK / the
+Design (decisions Q1–Q10, see the FIDAA-DEMO repo's CURRENT_TASK / the
 dev-wiki options analysis):
 - v2 SDK (mcp>=2): MCPServer, stdio + streamable-http.
 - In-memory numpy index, re-embedded on every startup — exact parity with
   the demo, which rebuilt its PGVector collection on every boot. No
   LangChain, no database, no credentials beyond the embedding endpoint.
+- Hybrid search (R6.1): BM25 (rank-bm25, lexical — strong for German
+  keywords / exact citation hits) fused with the cosine scores via
+  Reciprocal Rank Fusion (k=60); top-k output (k=4) and result format
+  unchanged. Pure-vector fallback when BM25 has no match at all.
 - /healthz via custom_route (unauthenticated, for compose healthchecks);
   optional MCP_TOKEN bearer gate (default off); transport_security Host
   allowlist so the SDK's 421 guard works behind compose service names.
@@ -39,7 +44,9 @@ from mcp.server import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
+from rank_bm25 import BM25Okapi
 from starlette.responses import JSONResponse
+from urllib.parse import quote
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -100,6 +107,9 @@ def _expand_hosts(hosts: list[str]) -> list[str]:
 # at startup instead of failing (R6.9).
 MAX_CHUNK_CHARS = 8192 * 3
 TOP_K = 4  # demo parity: as_retriever(k=4)
+# RRF fusion constant (Cormack et al. 2009): fusion quality is flat for
+# k in 40–60; 60 is the standard value (R6.1 hybrid search).
+RRF_K = 60
 EMBED_BATCH = 32  # demo parity: OpenAIEmbeddings(chunk_size=32)
 
 
@@ -205,6 +215,20 @@ def _path_list(path: dict[int, str]) -> list[str]:
     return [path[lv] for lv in sorted(path)]
 
 
+def _unique_paths(paths: list[list[str]]) -> list[list[str]]:
+    """Deduplicate heading paths, preserving document order (R6.5 TOC):
+    the chunks of one section all share its path, the TOC lists each
+    chapter once."""
+    seen: set[tuple[str, ...]] = set()
+    out: list[list[str]] = []
+    for p in paths:
+        key = tuple(p)
+        if key not in seen:
+            seen.add(key)
+            out.append(p)
+    return out
+
+
 def _load_context() -> list[tuple[list[str], str]]:
     """knowledge/kontext.md → (heading_path, chunk) pairs, H1/H2 split
     (demo parity: build_rag)."""
@@ -274,6 +298,8 @@ class Collection:
     chunks: list[str] = field(default_factory=list)
     paths: list[list[str]] = field(default_factory=list)
     matrix: np.ndarray | None = None  # (n_chunks, dim), L2-normalized rows
+    # BM25 lexical index over the same chunks (R6.1, hybrid search).
+    bm25: BM25Okapi | None = None
 
 
 INDEX: dict[str, Collection] = {}
@@ -312,6 +338,17 @@ def _with_instruction(query: str) -> str:
     return query
 
 
+def _rrf_scores(scores: np.ndarray) -> np.ndarray:
+    """Reciprocal rank of one ranking: 1/(k + rank), rank 1 = best score.
+
+    Summing the RRF scores of the BM25 and the vector ranking fuses both
+    without normalizing their (incompatible) raw score scales (R6.1)."""
+    order = np.argsort(-scores, kind="stable")
+    ranks = np.empty(len(scores), dtype=np.float64)
+    ranks[order] = np.arange(1, len(scores) + 1, dtype=np.float64)
+    return 1.0 / (RRF_K + ranks)
+
+
 async def build_indexes() -> None:
     """Embed every knowledge chunk once at startup (server lifespan).
 
@@ -345,12 +382,19 @@ async def build_indexes() -> None:
                         MAX_CHUNK_CHARS,
                         c.replace("\n", " "),
                     )
-            logger.info("Embedding %s: %d chunks…", name, len(chunks))
+            logger.info("Indexing %s: %d chunks (embeddings + BM25)…", name, len(chunks))
             vectors = await _embed_texts(client, chunks)
             mat = np.asarray(vectors, dtype=np.float32)
             mat /= np.linalg.norm(mat, axis=1, keepdims=True)  # cosine via dot
+            # BM25 over the same chunks (R6.1): plain word tokens, no
+            # stemmer; built once per startup, query cost is negligible.
+            bm25 = BM25Okapi([re.findall(r"\w+", c.lower()) for c in chunks])
             INDEX[name] = Collection(
-                name=name, chunks=chunks, paths=[p for p, _ in pairs], matrix=mat
+                name=name,
+                chunks=chunks,
+                paths=[p for p, _ in pairs],
+                matrix=mat,
+                bm25=bm25,
             )
         INDEX_READY = True
         logger.info(
@@ -380,9 +424,30 @@ class SearchResult(BaseModel):
 
 
 class SearchResults(BaseModel):
-    """Suchergebnisse (top 4 nach semantischem Cosine-Score)."""
+    """Suchergebnisse (top 4, hybride Sortierung: BM25 + Cosine via RRF)."""
 
     results: list[SearchResult]
+
+
+class CollectionSections(BaseModel):
+    """Abschnittsstruktur einer Sammlung (R6.5)."""
+
+    name: str = Field(
+        description="Sammlung: 'context', 'bibliography' oder 'documents'."
+    )
+    headings: list[list[str]] = Field(
+        description=(
+            "Überschriftenpfade in Dokumentenreihenfolge (von H1 abwärts; "
+            "im Dokumentenarchiv beginnt der Pfad mit dem Dateinamen), "
+            "ohne Wiederholungen."
+        )
+    )
+
+
+class SectionListing(BaseModel):
+    """Inhaltsverzeichnis der FIDAA-Wissensdatenbank (zum gezielten Suchen)."""
+
+    collections: list[CollectionSections]
 
 
 # ---------------------------------------------------------------------------
@@ -401,8 +466,12 @@ def build_server() -> MCPServer:
             "their heading paths; search_bibliography returns exact source "
             "citations (author/year/title) for a specific work; "
             "search_documents (if present) searches an extra document archive. "
+            "list_sections lists the chapter structure (heading paths) of a "
+            "collection — call it first to target your searches. "
             "Prompts: fidaa_systemprompt carries FIDAA's behavior rules; "
             "fidaa_starter_* are ready-made question templates. "
+            "Resources: fidaa://context/… serves full chapter texts for "
+            "clients that read MCP resources. "
             "Formulate queries in German for best recall, and cite sources "
             "(heading path or bibliography entry) when answering with this knowledge."
         ),
@@ -419,7 +488,8 @@ def build_server() -> MCPServer:
         return _client["c"]
 
     async def _search(name: str, query: str) -> list[SearchResult]:
-        """Cosine top-k over one in-memory collection (demo parity: k=4)."""
+        """Hybrid top-k (BM25 + cosine via RRF) over one in-memory
+        collection (demo parity: k=4, result format unchanged)."""
         col = INDEX.get(name)
         if col is None or col.matrix is None:
             raise RuntimeError(
@@ -431,6 +501,19 @@ def build_server() -> MCPServer:
         q = np.asarray(qvec, dtype=np.float32)
         q /= np.linalg.norm(q)
         scores = col.matrix @ q
+        # Hybrid ranking (R6.1): fuse the lexical BM25 ranking with the
+        # cosine ranking via RRF — BM25 wins on exact keyword/citation
+        # hits, the vectors on semantic queries. Falls back to pure
+        # vector order when BM25 matches nothing at all.
+        if col.bm25 is not None:
+            bm25_scores = np.asarray(
+                col.bm25.get_scores(re.findall(r"\w+", query.lower())),
+                dtype=np.float64,
+            )
+            if bm25_scores.max() > 0:
+                scores = _rrf_scores(bm25_scores) + _rrf_scores(
+                    scores.astype(np.float64)
+                )
         top = np.argsort(-scores)[:TOP_K]
         return [
             SearchResult(heading_path=col.paths[i], text=col.chunks[i]) for i in top
@@ -465,6 +548,65 @@ def build_server() -> MCPServer:
             """Durchsuche das Dokumentenarchiv nach relevantem zusätzlichen Kontext."""
             return SearchResults(results=await _search("rag_documents", query))
 
+    # --- TOC tool (R6.5): chapter structure before searching -------------
+    # Friendly labels → internal collection names. "documents" is optional
+    # (Q7), so it is only listed when actually indexed.
+    _COLLECTION_ALIASES = {
+        "context": "rag_context",
+        "bibliography": "rag_bibliography",
+        "documents": "rag_documents",
+    }
+
+    @server.tool()
+    async def list_sections(
+        collection: Annotated[
+            str,
+            Field(
+                description=(
+                    "Sammlung auflisten: 'all' (Standard), 'context', "
+                    "'bibliography' oder 'documents'."
+                )
+            ),
+        ] = "all",
+    ) -> SectionListing:
+        """Liste die Kapitel- und Abschnittsstruktur der Wissensdatenbank als Überschriftenpfade auf — rufe sie auf, um Kapitel gezielt zu benennen, bevor search_context o. ä. gesucht wird."""
+        if collection not in _COLLECTION_ALIASES and collection != "all":
+            raise ValueError(
+                f"Unbekannte Sammlung '{collection}' — erlaubt sind: "
+                "all, context, bibliography, documents."
+            )
+        if not INDEX_READY:
+            raise RuntimeError(
+                "Wissensdatenbank ist nicht (noch) indexiert"
+                + (f" — Fehler: {INDEX_ERROR}" if INDEX_ERROR else "")
+                + ". Bitte später erneut versuchen."
+            )
+        wanted = (
+            list(_COLLECTION_ALIASES.items())
+            if collection == "all"
+            else [(collection, _COLLECTION_ALIASES[collection])]
+        )
+        out: list[CollectionSections] = []
+        for label, internal in wanted:
+            col = INDEX.get(internal)
+            if col is None:
+                # Optional document archive not enabled (DOCUMENTS_PATH unset):
+                # skip it for "all", but explain when it was requested.
+                if collection == "documents":
+                    raise RuntimeError(
+                        "Dokumentenarchiv ist nicht aktiv (DOCUMENTS_PATH "
+                        "ist nicht gesetzt)."
+                    )
+                continue
+            # Empty path = preamble before the first heading: no chapter.
+            out.append(
+                CollectionSections(
+                    name=label,
+                    headings=[p for p in _unique_paths(col.paths) if p],
+                )
+            )
+        return SectionListing(collections=out)
+
     # --- prompts (R6.2): FIDAA's behavior rules + the 8 chat starters -----
     @server.prompt(
         description=(
@@ -490,6 +632,28 @@ def build_server() -> MCPServer:
             title=title,
             description=f"Startervorlage {i}: {title}",
         )(_make_starter(msg))
+
+    # --- chapter resources (R6.6): readable chapter texts ------------------
+    # One static resource per context chapter (factory pattern, like the
+    # starter prompts above). Static URIs — not a {heading} template —
+    # because heading paths contain '/' (two path segments); a template
+    # would depend on segment-capture semantics we don't want to rely on.
+    # Bibliography/documents stay search-only by design (R6.6 scope).
+    chapters = _context_chapters()
+    for path, text in chapters:
+        heading = " > ".join(path)
+        server.resource(
+            uri="fidaa://context/"
+            + "/".join(quote(part, safe="") for part in path),
+            name=heading,
+            title=f"Kontext: {heading}",
+            description=(
+                "Volltext eines Kapitels der FIDAA-Kontextdatenbank "
+                "(Markdown). Für Agenten, die MCP-Ressourcen lesen können."
+            ),
+            mime_type="text/markdown",
+        )(_make_chapter_resource(text))
+    logger.info("Registered %d chapter resources (fidaa://context/…)", len(chapters))
 
     # --- /healthz (R6.7): unauthenticated, for compose healthchecks -------
     @server.custom_route("/healthz", methods=["GET"])
@@ -519,6 +683,34 @@ def _make_starter(message: str):
         return message
 
     return starter
+
+
+def _context_chapters() -> list[tuple[list[str], str]]:
+    """(heading_path, full text) per context chapter (R6.6).
+
+    Re-splits knowledge/kontext.md (cheap: file read + split, no embedding)
+    so build_server() can register resources before the lifespan builds the
+    index. Repeated heading paths (rare) are merged so every chapter maps
+    to exactly one resource URI; preamble text without a heading is not a
+    chapter and is skipped.
+    """
+    merged: dict[tuple[str, ...], list[str]] = {}
+    for path, chunk in _load_context():
+        if not path:
+            continue
+        merged.setdefault(tuple(path), []).append(chunk)
+    return [(list(p), "\n\n".join(texts)) for p, texts in merged.items()]
+
+
+def _make_chapter_resource(text: str):
+    """Closure factory: gives each chapter resource its own function object,
+    so the text is captured per chapter (pattern shared with _make_starter)."""
+
+    def chapter() -> str:
+        """Volltext eines Kontextkapitels (Markdown)."""
+        return text
+
+    return chapter
 
 
 def _load_starters() -> list[tuple[str, str]]:
