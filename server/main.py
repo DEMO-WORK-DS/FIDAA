@@ -46,14 +46,16 @@ from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import Field
 from starlette.responses import JSONResponse
 
+# `import index` (module attribute access), NOT `from index import
+# INDEX_READY`: build_indexes() *rebinds* INDEX_READY / INDEX_ERROR, and a
+# from-import would be a stale snapshot taken at import time (a bool cannot
+# be "mutated" across modules). INDEX (dict) would survive either way, but
+# reading all three through the module keeps the rule uniform.
+import index
 from index import (
-    INDEX,
-    INDEX_ERROR,
-    INDEX_READY,
     CollectionSections,
     SectionListing,
     SearchResults,
-    build_indexes,
     search_collection,
 )
 from splitting import (
@@ -197,10 +199,10 @@ def _register_tools(server: MCPServer) -> None:
                 f"Unbekannte Sammlung '{collection}' — erlaubt sind: "
                 "all, context, bibliography, documents."
             )
-        if not INDEX_READY:
+        if not index.INDEX_READY:
             raise RuntimeError(
                 "Wissensdatenbank ist nicht (noch) indexiert"
-                + (f" — Fehler: {INDEX_ERROR}" if INDEX_ERROR else "")
+                + (f" — Fehler: {index.INDEX_ERROR}" if index.INDEX_ERROR else "")
                 + ". Bitte später erneut versuchen."
             )
         wanted = (
@@ -210,7 +212,7 @@ def _register_tools(server: MCPServer) -> None:
         )
         out: list[CollectionSections] = []
         for label, internal in wanted:
-            col = INDEX.get(internal)
+            col = index.INDEX.get(internal)
             if col is None:
                 # Optional document archive not enabled (DOCUMENTS_PATH unset):
                 # skip it for "all", but explain when it was requested.
@@ -295,13 +297,13 @@ def _register_healthz(server: MCPServer) -> None:
         503 with the error otherwise, so compose `depends_on: healthy`
         gates the app on a working knowledge base."""
         payload: dict[str, Any] = {
-            "status": "ok" if INDEX_READY else "degraded",
-            "ready": INDEX_READY,
-            "collections": {n: len(c.chunks) for n, c in INDEX.items()},
+            "status": "ok" if index.INDEX_READY else "degraded",
+            "ready": index.INDEX_READY,
+            "collections": {n: len(c.chunks) for n, c in index.INDEX.items()},
         }
-        if INDEX_ERROR:
-            payload["error"] = INDEX_ERROR
-        return JSONResponse(payload, status_code=200 if INDEX_READY else 503)
+        if index.INDEX_ERROR:
+            payload["error"] = index.INDEX_ERROR
+        return JSONResponse(payload, status_code=200 if index.INDEX_READY else 503)
 
 
 def _make_starter(message: str):
@@ -334,8 +336,8 @@ async def _server_lifespan(server: MCPServer):  # noqa: ARG001 — SDK signature
     (via @asynccontextmanager) *is* the context manager factory. Builds the
     in-memory index exactly once per process, before any transport serves a
     request."""
-    await build_indexes()
-    yield {"ready": INDEX_READY}
+    await index.build_indexes()
+    yield {"ready": index.INDEX_READY}
 
 
 # ---------------------------------------------------------------------------
