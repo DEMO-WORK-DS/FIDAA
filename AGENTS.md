@@ -7,7 +7,8 @@ Instructions for AI coding agents working in this repository.
 FIDAA (*Fachinformation Digitale Aufsuchende Arbeit*): the knowledge base of
 the DEMO-WORK project on **Digital Streetwork** (aufsuchende soziale Arbeit
 in digitalen Räumen) in `knowledge/*.md` (German, CC-BY-SA-4.0), plus a thin MCP
-server (`server/main.py`, ~700 LOC) that exposes it as tools
+server (`server/`, three small modules; `main.py` = entry point + assembly)
+that exposes it as tools
 (`search_context`, `search_bibliography`, `list_sections`, optional
 `search_documents`), prompts (FIDAA system prompt + the 8 chat starters)
 and resources (full context-chapter texts, `fidaa://context/…`). Any AI agent can use
@@ -36,7 +37,7 @@ usage guide).
   longer than that make the embeddings call fail with HTTP 400. The server
   warns at startup for chunks above `MAX_CHUNK_CHARS` (~24k chars). When
   restructuring `knowledge/*.md`, keep chapters under that limit.
-- `_split_markdown` in `server/main.py` is an **exact port** of the
+- `_split_markdown` in `server/splitting.py` is an **exact port** of the
   `MarkdownHeaderTextSplitter` semantics (langchain-text-splitters 1.1.2,
   the version the pre-M2 demo ran; the port was made by reading that
   source). FIDAA-DEMO's M2 H2 starter splitter is a second, independent
