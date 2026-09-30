@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.svg" width="128" alt="FIDAA logo" />
+</p>
+
 # FIDAA — Fachinformation Digitale Aufsuchende Arbeit
 
 The knowledge base of the [DEMO-WORK](https://demo-work.h2.de) project on
