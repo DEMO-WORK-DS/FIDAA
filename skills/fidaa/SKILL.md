@@ -48,7 +48,7 @@ Rules (carried verbatim in the `fidaa_systemprompt` prompt):
 - FIDAA gives orientation, **not counseling** (no psychological or legal
   advice) and never communicates with clients.
 
-`fidaa_starter_1` … `fidaa_starter_8` are ready-made question templates.
+`fidaa_starter_1` … `fidaa_starter_9` are ready-made question templates.
 
 ## Mode 2 — no MCP server (read the files directly)
 
@@ -58,7 +58,7 @@ Progressive reading — load only what you need:
 |---|---|
 | `knowledge/welcome.md` | quick orientation (small) |
 | `knowledge/systemprompt.md` | you should behave *like* FIDAA (behavior rules) |
-| `knowledge/prompts.md` | typical questions (the 8 starters) |
+| `knowledge/prompts.md` | typical questions (the 9 starters) |
 | `knowledge/kontext.md` | content questions — the knowledge database |
 | `knowledge/bibliography.md` | you need exact sources / citations |
 

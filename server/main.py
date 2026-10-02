@@ -6,7 +6,7 @@ Exposes the FIDAA knowledge base (knowledge/*.md, Digital Streetwork) as MCP
 tools and prompts:
 
   tools:    search_context, search_bibliography, list_sections, [search_documents]
-  prompts:  fidaa_systemprompt, fidaa_starter_1 … fidaa_starter_8
+  prompts:  fidaa_systemprompt, fidaa_starter_1 … fidaa_starter_9
   resources: fidaa://context/<H1>/<H2> — full chapter texts (R6.6)
 
 Design (decisions Q1–Q10, see the FIDAA-DEMO repo's CURRENT_TASK / the
@@ -242,7 +242,7 @@ def _register_tools(server: MCPServer) -> None:
 
 
 def _register_prompts(server: MCPServer) -> None:
-    """FIDAA's behavior rules + the 8 chat starters (R6.2)."""
+    """FIDAA's behavior rules + the 9 chat starters (R6.2)."""
 
     # --- prompts (R6.2) ---------------------------------------------------
     @server.prompt(
@@ -321,7 +321,7 @@ def _make_starter(message: str):
     arguments — the SDK rejects defaulted parameters for prompts)."""
 
     def starter() -> str:
-        """One of the 8 FIDAA chat starters (knowledge/prompts.md)."""
+        """One of the 9 FIDAA chat starters (knowledge/prompts.md)."""
         return message
 
     return starter

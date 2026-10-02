@@ -72,12 +72,76 @@ Die Wissensdatenbank wurde vom Projekt DEMO-WORK zusammengetragen und entwickelt
 
 **Wiederverwendung: FIDAA in anderen Chatbots**
 Das Fachwissen ist bewusst als **eigenständiges, wiederverwendbares Wissenspaket** aufgebaut und nicht
-in der Web-App versteckt: Andere Chatbots und KI-Agenten können dasselbe Wissen nutzen, indem sie
-einfach auf das GitHub-Repository <https://github.com/DEMO-WORK-DS/FIDAA> zeigen – `AGENTS.md` und
-`skills/fidaa/SKILL.md` beschreiben dort die Anbindung (MCP-Server per stdio oder HTTP, oder die
-`knowledge/`-Dateien direkt lesen). Jeder so angebundene Chatbot bekommt damit dieselben
-Such-Tools, das Inhaltsverzeichnis und die Kapitel-Ressourcen – das Wissen wird einmal gepflegt
-und überall genutzt, statt es zu duplizieren.
+in der Web-App versteckt. Es gibt zwei Wege, dasselbe Wissen in einen anderen Chatbot zu bringen:
+
+1. **Weg 1: Öffentlicher MCP-Endpunkt (ohne eigenen Server):**
+   FIDAA betreibt unter <https://fidaa.h2.de/mcp> einen öffentlichen MCP-Server (Model Context
+   Protocol, <https://modelcontextprotocol.io/specification>, Streamable-HTTP-Transport) – offen,
+   ohne Registrierung und ohne Authentifizierung. Jeder Chatbot, der MCP-Server verbinden kann,
+   nimmt FIDAA dort einfach als externen Wissensdienst auf und erhält damit dieselben
+   Möglichkeiten wie diese App: die Such-Tools `search_context` (Wissensdatenbank),
+   `search_bibliography` (exakte Quellenangabe aus der Bibliografie) und `list_sections`
+   (Kapitelstruktur als Inhaltsverzeichnis), dazu FIDAA-Prompts (der Systemprompt und die
+   Starterfragen) sowie die kompletten Kapiteltexte als MCP-Ressourcen (`fidaa://context/…`).
+   Suchanfragen an FIDAA wirken am besten auf Deutsch.
+   Die großen Chatbots können MCP-Server verbinden (Stand: Oktober 2026; MCP ist ein offener
+   Standard und die Client-Liste wächst laufend – offiziell unter
+   <https://modelcontextprotocol.io/clients>):
+   * **Claude** (claude.ai, Desktop, Mobile): unter „Customize > Connectors“ (Anpassen >
+     Connectors) einen Custom-Connector anlegen und die Adresse `https://fidaa.h2.de/mcp`
+     eintragen – ohne Review, sofort nutzbar. Offizielle Anleitung:
+     <https://claude.com/docs/connectors/custom/add-unlisted>
+    * **ChatGPT**: MCP-Apps (über den öffentlichen Endpunkt) sind für ChatGPT Business und
+      Enterprise/Edu verfügbar (Beta, wird schrittweise ausgerollt); Pro-Konten können MCP-Apps
+      mit Lese-/Abrufrechten verbinden. Ein Admin aktiviert den Entwicklermodus in den
+      Workspace-Einstellungen, danach wird unter „Apps → Erstellen“ die MCP-Server-Adresse
+      `https://fidaa.h2.de/mcp` als eigene App hinterlegt. Offizielle Anleitung (deutsch):
+      <https://help.openai.com/de-de/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt>
+      **Ohne Premium-Tarif bzw. Entwicklermodus** (reguläre Free-/Plus-Chats) lassen sich
+      FIDAA-Wissen und -Rolle auf drei Wegen in ChatGPT bringen – alle drei offiziell
+      dokumentiert:
+      1. Datei hochladen: `knowledge/kontext.md` (optional dazu `knowledge/bibliography.md`)
+         aus dem Repository <https://github.com/DEMO-WORK-DS/FIDAA> herunterladen und in den
+         Chat hochladen; ChatGPT beantwortet die Fragen anschließend aus diesem Dokument.
+         Datei-Uploads sind laut offizieller Doku im Free-Tarif und in den kostenpflichtigen
+         Tarifen verfügbar (Free: 3 Uploads pro Tag). Die hochgeladene Datei ist eine
+         Momentaufnahme – nach Aktualisierungen im Repository erneut hochladen:
+         <https://help.openai.com/de-de/articles/8555545-file-uploads-faq>
+      2. Link in den Chat: den direkten Link zur Datei, z. B.
+         <https://github.com/DEMO-WORK-DS/FIDAA/raw/main/knowledge/kontext.md>, in die
+         Unterhaltung einfügen – ChatGPT liest die verlinkte öffentliche Web-Seite
+         (Websuche/-Browsing, laut Doku in Free, Go, Plus, Pro, Business, Enterprise und Edu
+         verfügbar; im Gegensatz zum Upload immer auf dem Stand des Repositories):
+         <https://help.openai.com/de-de/articles/9237897-searching-the-web-with-chatgpt>
+      3. Rolle übernehmen: (eine gekürzte Version von) `knowledge/systemprompt.md` unter
+         „Einstellungen → Personalisierung“ als benutzerdefinierte Anweisungen eintragen,
+         damit ChatGPT entsprechend antwortet. Verfügbar in allen Tarifen; Zeichenlimit:
+         Free/Go 1.500 Zeichen, Plus und höher 5.000 Zeichen (der komplette Systemprompt hat
+         ca. 3.200 Zeichen, passt also nur im kostenpflichtigen Tarif):
+         <https://help.openai.com/de-de/articles/8096356-chatgpt-custom-instructions>
+      Hinweis: `AGENTS.md` und `skills/fidaa/SKILL.md` richten sich an Coding-Agents bzw. an
+      ChatGPT-Business-/Enterprise-/Edu-Workspaces (dort lassen sich Skills hochladen); in
+      regulären Consumer-Chats stehen diese Funktionen nicht zur Verfügung:
+      <https://help.openai.com/de-de/articles/20001066-skills-in-chatgpt>
+   * **Mistral** (Mistral Studio, die Plattform unter console.mistral.ai): unter „Connectors“
+     (Public Preview) den MCP-Connector mit der Adresse `https://fidaa.h2.de/mcp` registrieren
+     und in Konversationen verwenden. Offizielle Anleitung:
+     <https://docs.mistral.ai/studio/connectors>
+   * **Gemini**: über „Gemini Enterprise“ (Business-Edition) als Custom-MCP-Connector anbindbar
+     (die Konfiguration erledigt die Team-Administration); die persönliche Gemini-App bietet
+     laut aktueller Doku keine Möglichkeit, eigene MCP-Server anzubinden. Offizielle Anleitung:
+     <https://support.google.com/g/answer/17106276>
+   * Chatbots ohne MCP-Unterstützung: Weg 2.
+   * Hinweis: Beim Fragenstellen über einen fremden Chatbot-Dienst werden die Suchanfragen an den
+     jeweiligen Anbieter und an den FIDAA-Server übermittelt – vertrauliche Inhalte sollten nicht
+     eingegeben werden.
+2. **Weg 2: Eigenes Wissenpaket / eigene Anbindung:**
+   Andere Chatbots und KI-Agenten können dasselbe Wissen auch nutzen, indem sie auf das
+   GitHub-Repository <https://github.com/DEMO-WORK-DS/FIDAA> zeigen – `AGENTS.md` und
+   `skills/fidaa/SKILL.md` beschreiben dort die Anbindung (MCP-Server per stdio oder HTTP, oder
+   die `knowledge/`-Dateien direkt lesen). Jeder so angebundene Chatbot bekommt damit dieselben
+   Such-Tools, das Inhaltsverzeichnis und die Kapitel-Ressourcen – das Wissen wird einmal gepflegt
+   und überall genutzt, statt es zu duplizieren.
 
 **Projekt, Software & Kontakt**
 

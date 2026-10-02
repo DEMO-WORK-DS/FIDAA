@@ -28,3 +28,6 @@ Wie lässt sich Beziehung in einem Interventionskontext, zum Beispiel bei Radika
 
 ## Wer steht hinter dem Projekt?
 Wer steht hinter den Projekten FIDAA und DEMO-WORK, und wie kann ich Kontakt aufnehmen, wenn mich das Projekt oder eine Kooperation interessiert?
+
+## Wie verbinde ich FIDAA mit ChatGPT & Co.?
+Über welche Wege – zum Beispiel den öffentlichen MCP-Endpunkt – kann ich FIDAA in andere Chatbots wie ChatGPT, Claude, Gemini oder Mistral integrieren, und was ist dabei zu beachten?

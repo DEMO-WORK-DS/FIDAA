@@ -17,7 +17,7 @@ einfach, indem der Agent `knowledge/` liest.
   - `kontext.md` (Kontextdatenbank)
   - `bibliography.md` (140+ Referenzen zu externen Quellen)
   - `systemprompt.md` (Geprüfte Anweisungen für einen KI-Agenten)  
-  - `prompts.md` (8 Chat-Startervorlagen)
+  - `prompts.md` (9 Chat-Startervorlagen)
   - `welcome.md` (Kurze Projektübersicht)
 - `server/main.py` — schlanker MCP-Server auf dem offiziellen `mcp`-SDK
   v2 (`MCPServer`), stdio + streamable-http, In-Memory-Hybridindex
@@ -76,7 +76,7 @@ Projektinformationen, vollständige Team-Profile und Kontakt (Impressum):
 | tool           | `search_documents(query)`    | optional — nur wenn `DOCUMENTS_PATH` gesetzt ist     |
 | tool           | `list_sections(collection?)` | Kapitelstruktur (Überschriftspfade), pro Sammlung    |
 | prompt         | `fidaa_systemprompt`         | FIDAAs Verhaltensregeln (System-Prompt)              |
-| prompt         | `fidaa_starter_1…8`          | die 8 Chat-Startervorlagen, versandbereit            |
+| prompt         | `fidaa_starter_1…9`          | die 9 Chat-Startervorlagen, versandbereit            |
 | resource       | `fidaa://context/<H1>/<H2>`  | vollständige Kapiteltexte (nur Kontext)              |
 | route          | `GET /healthz`               | Index-Status (nur HTTP-Modus)                        |
 

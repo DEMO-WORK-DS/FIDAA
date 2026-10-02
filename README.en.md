@@ -78,7 +78,7 @@ Project information, full team bios and contact (imprint):
 | tool | `search_documents(query)` | optional — only if `DOCUMENTS_PATH` is set |
 | tool | `list_sections(collection?)` | chapter structure (heading paths), per collection |
 | prompt | `fidaa_systemprompt` | FIDAA's behavior rules (system prompt) |
-| prompt | `fidaa_starter_1…8` | the 8 chat starters, ready to send |
+| prompt | `fidaa_starter_1…9` | the 9 chat starters, ready to send |
 | resource | `fidaa://context/<H1>/<H2>` | full chapter texts (context only) |
 | route | `GET /healthz` | index state (HTTP mode only) |
 

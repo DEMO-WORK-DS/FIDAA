@@ -10,7 +10,7 @@ in digitalen Räumen) in `knowledge/*.md` (German, CC-BY-SA-4.0), plus a thin MC
 server (`server/`, three small modules; `main.py` = entry point + assembly)
 that exposes it as tools
 (`search_context`, `search_bibliography`, `list_sections`, optional
-`search_documents`), prompts (FIDAA system prompt + the 8 chat starters)
+`search_documents`), prompts (FIDAA system prompt + the 9 chat starters)
 and resources (full context-chapter texts, `fidaa://context/…`). Any AI agent can use
 this knowledge via the MCP server (stdio or streamable-http) or by reading
 `knowledge/` directly (see `skills/fidaa/SKILL.md` for the agent-facing
