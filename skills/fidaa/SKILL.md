@@ -22,7 +22,8 @@ expert-checked knowledge base on **Digital Streetwork** (German).
 If an MCP server named `fidaa` is connected, use its tools instead of
 reading files. No server running? Connect to the hosted endpoint
 `https://fidaa.h2.de/mcp` (streamable-HTTP, open — see README,
-"Using it from an agent → Hosted endpoint") instead of self-hosting.
+"Nutzung durch einen Agenten → Gehosteter Endpunkt") instead of
+self-hosting.
 
 1. `search_context(query)` — the 4 most relevant passages of the knowledge
    database (heading path + text).

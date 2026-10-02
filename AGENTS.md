@@ -26,7 +26,7 @@ usage guide).
   the inspector UI needs Node)
 - Health (HTTP mode): `curl localhost:8002/healthz`
 - Public endpoint (FIDAA-DEMO deployment): `https://fidaa.h2.de/mcp`
-  (open, no auth) — see README "Public endpoint".
+  (open, no auth) — see README, section "Öffentlicher Endpunkt".
 - No test suite exists. Verify changes by starting the server and checking
   the startup log (index build line) plus a manual tool call (Inspector or
   any MCP client).

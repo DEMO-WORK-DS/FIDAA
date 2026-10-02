@@ -4,79 +4,85 @@
 
 # FIDAA — Fachinformation Digitale Aufsuchende Arbeit
 
-The knowledge base of the [DEMO-WORK](https://demo-work.h2.de) project on
+[**Click here, to read this page in English**](README.en.md)
+
+Dieses Projekt enthält die Wissensdatenbank des [DEMO-WORK](https://demo-work.h2.de)-Projekts zu
 **Digital Streetwork** (aufsuchende soziale Arbeit in digitalen Räumen),
-packaged so that **any AI agent** can use it: as an [MCP](https://modelcontextprotocol.io)
-server (tools + prompts), or by simply reading `knowledge/`.
+verpackt so, dass **jeder KI-Agent** sie nutzen kann: als
+[MCP](https://modelcontextprotocol.io)-Server (Tools + Prompts) oder
+einfach, indem der Agent `knowledge/` liest.
 
-- `knowledge/` — the curated, expert-checked knowledge base (German,
-  CC BY-SA 4.0):
-  `kontext.md` (context database), `bibliography.md` (140+ cited sources),
-  `systemprompt.md`, `prompts.md` (8 chat starters), `welcome.md`.
-- `server/main.py` — thin MCP server on the official `mcp` SDK v2
-  (`MCPServer`), stdio + streamable-http, in-memory hybrid index (numpy
-  cosine + BM25, RRF fusion) rebuilt on startup (no database, no LangChain).
-- `skills/fidaa/SKILL.md` — [Agent Skill](https://agentskills.io): usage
-  guide for coding agents that open this repo directly.
+- `knowledge/` — die kuratierte, fachlich von Expert\*innen geprüfte Wissensdatenbank
+  (Deutsch, CC BY-SA 4.0):
+  - `kontext.md` (Kontextdatenbank)
+  - `bibliography.md` (140+ Referenzen zu externen Quellen)
+  - `systemprompt.md` (Geprüfte Anweisungen für einen KI-Agenten)  
+  - `prompts.md` (8 Chat-Startervorlagen)
+  - `welcome.md` (Kurze Projektübersicht)
+- `server/main.py` — schlanker MCP-Server auf dem offiziellen `mcp`-SDK
+  v2 (`MCPServer`), stdio + streamable-http, In-Memory-Hybridindex
+  (numpy-Cosine + BM25, RRF-Fusion), bei jedem Start neu aufgebaut (keine
+  Datenbank, kein LangChain).
+- `skills/fidaa/SKILL.md` — [Agent Skill](https://agentskills.io):
+  Nutzungsanleitung für Coding-Agenten, die dieses Repo direkt öffnen.
 
-## Project & Team
+## Projekt & Team
 
-FIDAA is part of **DEMO-WORK**, a research and transfer project funded
-by the **VolkswagenStiftung** ("Transformationswissen über Demokratien
-im Wandel – transdisziplinäre Perspektiven"), carried out in cooperation
-between the **Hochschule Magdeburg-Stendal (h2)**, the **Amadeu Antonio
-Stiftung** and the **Katholische Hochschule Nordrhein-Westfalen
-(katho)**, and affiliated with the Institut für demokratische Kultur (IdK)
-at h2.
+FIDAA ist Teil von [**DEMO-WORK**](https://demo-work.h2.de/), einem von der [**VolkswagenStiftung**](https://www.volkswagenstiftung.de/)
+geförderten Forschungs- und Transferprojekt ([„Transformationswissen über
+Demokratien im Wandel – transdisziplinäre Perspektiven"](https://www.volkswagenstiftung.de/de/news/aktuelles/demokratiewandel-im-fokus-neun-neue-forschungsprojekte-erhalten-foerderung)), durchgeführt in
+Kooperation zwischen der [**Hochschule Magdeburg-Stendal (h2)**](https://www.h2.de/), der
+[**Amadeu Antonio Stiftung**](https://www.amadeu-antonio-stiftung.de/) und der [**Katholischen Hochschule
+Nordrhein-Westfalen (katho)**](https://katho-nrw.de).
 
-The team unites scientific and practical expertise in social work,
-sociology of technology, and computer science / AI research:
+Das Team vereint wissenschaftliche und praktische Expertise aus Sozialer
+Arbeit, Techniksoziologie sowie Informatik / KI-Forschung:
 
-**Wissenschaft (research)**
+**Wissenschaft**
 
-- **Prof. Dr. Nele Wulf** (katho Aachen) — professor for digitalization
-  and social work; leads the consolidation of scientific and practical
-  findings; responsible for the concept and evaluation of FIDAA.
-- **Christina Dinar** (Amadeu Antonio Stiftung; PhD at KHSB Berlin /
-  TU Berlin) — research associate; co-developed the "Digital Streetwork"
-  concept; doctoral research on digital streetwork as outreach work in
-  social media.
-- **David Döring** (h2) — research associate (computer science);
-  technical implementation of the knowledge-based system; technical
-  advisory for the team.
-- **Nils Fietkau** (h2) — research associate (social work, health,
-  media); co-responsible for the empirical research on professional
-  digital streetwork practice.
+- **Prof. Dr. Nele Wulf** (katho Aachen) — Professorin für Digitalisierung
+  und Soziale Arbeit; leitet die Zusammenführung wissenschaftlicher und
+  praktischer Befunde; verantwortlich für Konzept und Evaluation von FIDAA.
+- **Christina Dinar** (Amadeu Antonio Stiftung; Promotion an der KHSB
+  Berlin / TU Berlin) — wissenschaftliche Mitarbeitende; Mitentwicklerin
+  des Konzepts „Digital Streetwork"; Dissertation über digitalen Streetwork
+  als Outreach-Arbeit in sozialen Medien.
+- **David Döring** (h2) — wissenschaftlicher Mitarbeiter (Informatik);
+  technische Umsetzung des wissensbasierten Systems; technisches Advisory
+  für das Team.
+- **Nils Fietkau** (h2) — wissenschaftlicher Mitarbeiter (Soziale Arbeit,
+  Gesundheit, Medien); mitverantwortlich für die empirische Forschung zur
+  professionellen Praxis digitalen Streetworks.
 
-**Praxis (practice)**
+**Praxis**
 
-- **Cornelia Heyken** (Amadeu Antonio Stiftung) — co-developer of the
-  "Digital Streetwork" concept; analyzes the academic and formalized
-  knowledge base on digital streetwork and prepares it for the AI
-  prototype.
-- **Jerome Trebing** (Amadeu Antonio Stiftung) — violence-prevention
-  practitioner; ethnographic observation and analysis of
-  digital-streetwork practice; development of professional standards.
+- **Cornelia Heyken** (Amadeu Antonio Stiftung) — Mitentwicklerin des
+  Konzepts „Digital Streetwork"; analysiert die wissenschaftliche und
+  formalisierte Wissensgrundlage des digitalen Streetwork und bereitet sie
+  für den KI-Prototyp auf.
+- **Jerome Trebing** (Amadeu Antonio Stiftung) — Praktiker der
+  Gewaltprävention; ethnografische Beobachtung und Analyse von
+  Streetwork-Praxis im Digitalen; Entwicklung von Berufsstandards.
 
-Project information, full team bios and contact (imprint):
-<https://demo-work.h2.de> (English: <https://demo-work.h2.de/en/>)
+Projektinformationen, vollständige Team-Profile und Kontakt (Impressum):
+<https://demo-work.h2.de> (Englisch: <https://demo-work.h2.de/en/>)
 
-## What the server offers
+## Was der MCP-Server bietet
 
-| MCP surface | Name | What it does |
-|---|---|---|
-| tool | `search_context(query)` | 4 most relevant passages, with heading paths |
-| tool | `search_bibliography(query)` | exact source citations (author/year/title) |
-| tool | `search_documents(query)` | optional — only if `DOCUMENTS_PATH` is set |
-| tool | `list_sections(collection?)` | chapter structure (heading paths), per collection |
-| prompt | `fidaa_systemprompt` | FIDAA's behavior rules (system prompt) |
-| prompt | `fidaa_starter_1…8` | the 8 chat starters, ready to send |
-| resource | `fidaa://context/<H1>/<H2>` | full chapter texts (context only) |
-| route | `GET /healthz` | index state (HTTP mode only) |
+| MCP-Oberfläche | Name                         | Funktion                                             |
+| -------------- | ---------------------------- | ---------------------------------------------------- |
+| tool           | `search_context(query)`      | die 4 relevantesten Passagen, mit Überschriftspfaden |
+| tool           | `search_bibliography(query)` | exakte Quellenangaben (Autor:in/Jahr/Titel)          |
+| tool           | `search_documents(query)`    | optional — nur wenn `DOCUMENTS_PATH` gesetzt ist     |
+| tool           | `list_sections(collection?)` | Kapitelstruktur (Überschriftspfade), pro Sammlung    |
+| prompt         | `fidaa_systemprompt`         | FIDAAs Verhaltensregeln (System-Prompt)              |
+| prompt         | `fidaa_starter_1…8`          | die 8 Chat-Startervorlagen, versandbereit            |
+| resource       | `fidaa://context/<H1>/<H2>`  | vollständige Kapiteltexte (nur Kontext)              |
+| route          | `GET /healthz`               | Index-Status (nur HTTP-Modus)                        |
 
-Queries in **German** give the best recall.
+Abfragen auf **Deutsch** liefern die besten Treffer.
 
-## Quickstart (laptop)
+## Schnellstart (Laptop)
 
 ```bash
 git clone https://github.com/DEMO-WORK-DS/FIDAA.git && cd FIDAA
@@ -86,18 +92,18 @@ uv run server/main.py                              # stdio (for an agent)
 uv run server/main.py --transport streamable-http  # HTTP on 0.0.0.0:8002
 ```
 
-Try it in the MCP Inspector: `uv run mcp dev server/main.py`.
+Im MCP Inspector testen: `uv run mcp dev server/main.py`.
 
-## Using it from an agent
+## Nutzung durch einen Agenten
 
-### Hosted endpoint (no self-hosting)
+### Gehosteter Endpunkt (ohne Self-Hosting)
 
-The [FIDAA-DEMO](https://github.com/DEMO-WORK-DS/FIDAA-DEMO) deployment
-exposes the server at **`https://fidaa.h2.de/mcp`** (streamable-HTTP,
-routed through Caddy). It is **open — no authentication needed**. No LLM
-keys of your own: embeddings run on the hosting side.
+Der [FIDAA-DEMO](https://github.com/DEMO-WORK-DS/FIDAA-DEMO)-Betrieb stellt
+den Server unter **`https://fidaa.h2.de/mcp`** bereit (streamable-HTTP,
+über Caddy geroutet). Er ist **offen — ohne Authentifizierung**. Keine
+eigenen LLM-Keys nötig: die Embeddings laufen auf der Hosting-Seite.
 
-**Claude Code / Codex** (`.mcp.json`, project dir):
+**Claude Code / Codex** (`.mcp.json`, Projektverzeichnis):
 
 ```json
 {
@@ -123,13 +129,13 @@ keys of your own: embeddings run on the hosting side.
 }
 ```
 
-**Claude Desktop**: same `mcpServers` shape, in
+**Claude Desktop**: gleiche `mcpServers`-Struktur, in
 `~/Library/Application Support/Claude/claude_desktop_config.json`
 (macOS).
 
-### Self-hosted (stdio — full control, your LLM keys)
+### Selbst gehostet (stdio — volle Kontrolle, eigene LLM-Keys)
 
-**Claude Code / Codex** (`.mcp.json`, project dir — stdio):
+**Claude Code / Codex** (`.mcp.json`, Projektverzeichnis — stdio):
 
 ```json
 {
@@ -147,7 +153,7 @@ keys of your own: embeddings run on the hosting side.
 }
 ```
 
-**OpenCode** (opencode.json):
+**OpenCode** (`opencode.json`):
 
 ```json
 {
@@ -166,33 +172,25 @@ keys of your own: embeddings run on the hosting side.
 }
 ```
 
-**Claude Desktop**: same shape as `.mcp.json`, in
+**Claude Desktop**: wie `.mcp.json`, in
 `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS).
 
-**Running over HTTP** (e.g. from the FIDAA-DEMO compose network):
-point any streamable-http client at `http://<host>:8002/mcp`.
+**Per HTTP** (z. B. aus dem FIDAA-DEMO-Compose-Netzwerk): jeden
+streamable-http-Client auf `http://<host>:8002/mcp` zeigen lassen.
 
-## Public endpoint
+## Öffentlicher Endpunkt
 
-The FIDAA-DEMO deployment exposes the HTTP endpoint at
-**`https://fidaa.h2.de/mcp`** (Caddy route; see "Hosted endpoint" above).
-It is deliberately **open** (no authentication) to keep it as accessible
-as possible — without exposing the LLM API itself, which is never
-reachable from outside. The public hostname is in `MCP_ALLOWED_HOSTS`
-(the SDK's 421 guard).
+Der FIDAA-DEMO-Betrieb stellt den HTTP-Endpunkt unter
+**`https://fidaa.h2.de/mcp`** bereit (Caddy-Route; siehe „Gehosteter
+Endpunkt" oben). Er ist bewusst **offen** (ohne Authentifizierung), um ihn
+so zugänglich wie möglich zu halten.
 
-Trade-off: every call costs embedding-API usage on the hosting side.
-If traffic grows, put rate limiting in front of `/mcp` first, and/or
-switch on auth — the server already has an off-by-default `MCP_TOKEN`
-bearer gate (`server/main.py`, `secrets.env.example`), and the
-spec-compliant upgrade is OAuth 2.1 (MCP authorization spec). Longer
-term: publish to the [MCP registry](https://modelcontextprotocol.io/registry)
-so agents researching digital streetwork can discover it.
+Damit kann FIDAA als Werkzeug ganz einfach durch angabe des Links in andere KI-Agenten integriert werden.
 
-## License
+## Lizenz
 
-Split by content type: the **knowledge content** (`knowledge/*.md`) is
-**CC BY-SA 4.0** (root `LICENSE`; each file also carries a
-`SPDX-License-Identifier: CC-BY-SA-4.0` header). The **code**
-(`server/`, `Dockerfile`, `pyproject.toml`, …) is **EUPL-1.2-only**
-(per-file SPDX headers).
+Aufteilung nach Inhaltstyp: Die **Wissensinhalte** (`knowledge/*.md`) sind
+**CC BY-SA 4.0** (root `LICENSE`; jede Datei zusätzlich mit
+`SPDX-License-Identifier: CC-BY-SA-4.0`-Header). Der **Code** (`server/`,
+`Dockerfile`, `pyproject.toml`, …) ist **EUPL-1.2-only**
+(per-Datei-SPDX-Header).
