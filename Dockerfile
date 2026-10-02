@@ -38,6 +38,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY knowledge ./knowledge
 COPY server ./server
 COPY LICENSE ./LICENSE
+# Info page for bare GETs on /mcp (served by the server itself, see main.py).
+COPY mcp-landing.html ./mcp-landing.html
 
 # streamable-http on 8002 (compose default). Local agents use stdio instead:
 #   docker compose run --rm fidaa python server/main.py

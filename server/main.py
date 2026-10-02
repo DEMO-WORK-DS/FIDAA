@@ -22,6 +22,9 @@ dev-wiki options analysis):
 - /healthz via custom_route (unauthenticated, for compose healthchecks);
   optional MCP_TOKEN bearer gate (default off); transport_security Host
   allowlist so the SDK's 421 guard works behind compose service names.
+- Bare GET /mcp (no MCP session) serves mcp-landing.html — an info page
+  for humans/agents opening the URL in a browser; the session-GET (SSE
+  stream) and all POSTs always reach the MCP app.
 
 Layout (split for reviewability, 2026-09-24; entry point unchanged):
   splitting.py — markdown splitter (verified port) + knowledge loaders
@@ -37,6 +40,7 @@ import hmac
 import logging
 import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated, Any
 from urllib.parse import quote
 
@@ -44,7 +48,7 @@ import uvicorn
 from mcp.server import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import Field
-from starlette.responses import JSONResponse
+from starlette.responses import FileResponse, JSONResponse
 
 # `import index` (module attribute access), NOT `from index import
 # INDEX_READY`: build_indexes() *rebinds* INDEX_READY / INDEX_ERROR, and a
@@ -102,6 +106,11 @@ def _expand_hosts(hosts: list[str]) -> list[str]:
             out.append(h)
         out.append(h if h.endswith(":*") else f"{h}:*")
     return out
+
+
+# Info page served for a bare GET /mcp (see _McpLanding). Lives in the repo
+# root — /app/mcp-landing.html in the standalone image.
+_MCP_LANDING = Path(__file__).resolve().parent.parent / "mcp-landing.html"
 
 
 # ---------------------------------------------------------------------------
@@ -366,6 +375,34 @@ class _BearerGate:
         await self.app(scope, receive, send)
 
 
+class _McpLanding:
+    """Info page for a bare GET /mcp (browser, or an agent following the
+    link): without it the MCP app answers 400 "Missing session ID".
+
+    Only a session-less GET on exactly /mcp or /mcp/ is intercepted; the
+    streamable-HTTP SSE leg (GET with an Mcp-Session-Id) and every POST
+    (e.g. initialize) pass through untouched. Served by the server itself
+    so the behaviour is identical standalone and in the FIDAA-DEMO
+    deployment (Caddy just proxies /mcp*).
+    """
+
+    def __init__(self, app) -> None:
+        self.app = app
+
+    async def __call__(self, scope, receive, send) -> None:
+        if (
+            scope["type"] == "http"
+            and scope.get("method") == "GET"
+            and scope.get("path") in ("/mcp", "/mcp/")
+            and b"mcp-session-id" not in dict(scope.get("headers", []))
+        ):
+            if _MCP_LANDING.exists():
+                response = FileResponse(_MCP_LANDING)
+                await response(scope, receive, send)
+                return
+        await self.app(scope, receive, send)
+
+
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
@@ -398,6 +435,16 @@ def main() -> None:
     if MCP_ALLOWED_HOSTS:
         ts = TransportSecuritySettings(allowed_hosts=_expand_hosts(MCP_ALLOWED_HOSTS))
     app = server.streamable_http_app(transport_security=ts)
+    if not _MCP_LANDING.exists():
+        logger.warning(
+            "Landing page %s not found — bare GET /mcp falls back to the "
+            "MCP app's 400 'Missing session ID'.",
+            _MCP_LANDING,
+        )
+    # add_middleware() prepends: the landing page goes in first, so the
+    # optional token gate (added second) stays outermost — a protected
+    # endpoint refuses the browser before any page is served.
+    app.add_middleware(_McpLanding)
     if MCP_TOKEN:
         app.add_middleware(_BearerGate, token=MCP_TOKEN)
     logger.info(

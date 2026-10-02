@@ -1,0 +1,99 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: EUPL-1.2-only -->
+<!-- Copyright (C) 2026 FIDAA contributors. See: https://eupl.eu/1.2/en/ -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FIDAA — MCP endpoint</title>
+  <meta name="description" content="MCP (Model Context Protocol) endpoint of FIDAA — the DEMO-WORK knowledge base on Digital Streetwork. Point your MCP client here." />
+  <style>
+    :root { color-scheme: light dark; --accent: #FF6B00; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.55; margin: 0; padding: 2.5rem 1.25rem;
+      display: flex; justify-content: center;
+      background: #faf9f8; color: #222;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #141312; color: #eceae8; }
+      a { color: #ff9a4d; }
+    }
+    main { max-width: 46rem; }
+    svg.logo { width: 84px; height: 84px; display: block; margin: 0 auto 1rem; }
+    h1 { font-size: 1.6rem; margin: 0 0 .25rem; text-align: center; }
+    h1 .sub { color: var(--accent); }
+    h2 { font-size: 1.05rem; margin: 2rem 0 .5rem; }
+    p.lead { text-align: center; margin: 0 auto; max-width: 38rem; }
+    a { color: var(--accent); }
+    code { background: rgba(128, 128, 128, .15); padding: .1em .35em; border-radius: 4px; }
+    footer { margin-top: 2.5rem; font-size: .8rem; opacity: .75; text-align: center; }
+  </style>
+</head>
+<body>
+  <main>
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FIDAA logo">
+      <defs>
+        <pattern id="p" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+          <circle cx="1.5" cy="1.5" r="1.4" fill="#FF6B00"/>
+          <circle cx="4.5" cy="4.5" r="1.4" fill="#FF6B00"/>
+        </pattern>
+      </defs>
+      <path d="M 52.72 46.5 A 17 17 0 1 0 46.5 52.72 Q 48.97 51.56, 55.68 55.68 Q 51.56 48.97, 52.72 46.5 Z" fill="url(#p)" stroke="#FF6B00" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M 11.28 17.5 A 17 17 0 1 0 17.5 11.28 Q 15.03 12.44, 8.32 8.32 Q 12.44 15.03, 11.28 17.5 Z" fill="#FF6B00" stroke="#FF6B00" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M32 22.5 Q 33.9 30.1, 41.5 32 Q 33.9 33.9, 32 41.5 Q 30.1 33.9, 22.5 32 Q 30.1 30.1, 32 22.5 Z" fill="#FFFFFF"/>
+    </svg>
+
+    <h1>FIDAA <span class="sub">MCP endpoint</span></h1>
+    <p class="lead">
+      You have reached the <strong>Model Context Protocol (MCP)</strong> endpoint of
+      <a href="https://github.com/DEMO-WORK-DS/FIDAA">FIDAA</a> — the knowledge base of the
+      <a href="https://demo-work.h2.de">DEMO-WORK</a> project on Digital Streetwork.
+      This page is shown because your client sent a plain HTTP request (e.g. a
+      browser), which cannot complete the MCP handshake; an actual MCP request to
+      this URL returns the protocol response instead.
+    </p>
+
+    <h2>If you are an AI agent (or configuring an MCP client)</h2>
+    <p>
+      Ingest this server as an agent tool per the
+      <a href="https://modelcontextprotocol.io/specification">MCP specification</a>:
+      connect a streamable-HTTP MCP client to
+      <code id="mcp-url">https://fidaa.h2.de/mcp</code> (open — no
+      authentication required).
+      You get the tools <code>search_context</code>,
+      <code>search_bibliography</code>, <code>list_sections</code>
+      (+ optionally <code>search_documents</code>), FIDAA's prompts, and the
+      chapter resources <code>fidaa://context/…</code>.
+      Formulate queries in <strong>German</strong> for best recall.
+    </p>
+
+    <h2>Project &amp; skill</h2>
+    <ul>
+      <li>
+        Full documentation, project information and all client configurations:
+        <a href="https://github.com/DEMO-WORK-DS/FIDAA">github.com/DEMO-WORK-DS/FIDAA</a>
+        (README, section „Nutzung durch einen Agenten").
+      </li>
+      <li>
+        The repository also ships an agent skill —
+        <a href="https://github.com/DEMO-WORK-DS/FIDAA/blob/main/skills/fidaa/SKILL.md">skills/fidaa/SKILL.md</a>.
+        You can ingest that skill file directly, or reference it from your
+        <code>AGENTS.md</code> / <code>SKILL.md</code> setup.
+      </li>
+    </ul>
+
+    <footer>
+      FIDAA — Fachinformation Digitale Aufsuchende Arbeit ·
+      <a href="https://demo-work.h2.de">DEMO-WORK</a> (h2 · Amadeu Antonio Stiftung · katho)
+    </footer>
+  </main>
+  <script>
+    // Show the URL the visitor actually reached (origin + /mcp), so the
+    // instruction stays correct on other hosts/ports too; the hardcoded
+    // value in the markup is the fallback for no-JS clients.
+    document.getElementById("mcp-url").textContent =
+      new URL("/mcp", location.origin).href;
+  </script>
+</body>
+</html>
