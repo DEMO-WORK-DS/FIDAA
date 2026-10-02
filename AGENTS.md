@@ -25,6 +25,8 @@ usage guide).
 - MCP Inspector: `uv run mcp dev server/main.py` (dev-group extra `mcp[cli]`;
   the inspector UI needs Node)
 - Health (HTTP mode): `curl localhost:8002/healthz`
+- Public endpoint (FIDAA-DEMO deployment): `https://fidaa.h2.de/mcp`
+  (open, no auth) — see README "Public endpoint".
 - No test suite exists. Verify changes by starting the server and checking
   the startup log (index build line) plus a manual tool call (Inspector or
   any MCP client).

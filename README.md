@@ -90,6 +90,45 @@ Try it in the MCP Inspector: `uv run mcp dev server/main.py`.
 
 ## Using it from an agent
 
+### Hosted endpoint (no self-hosting)
+
+The [FIDAA-DEMO](https://github.com/DEMO-WORK-DS/FIDAA-DEMO) deployment
+exposes the server at **`https://fidaa.h2.de/mcp`** (streamable-HTTP,
+routed through Caddy). It is **open — no authentication needed**. No LLM
+keys of your own: embeddings run on the hosting side.
+
+**Claude Code / Codex** (`.mcp.json`, project dir):
+
+```json
+{
+  "mcpServers": {
+    "fidaa": {
+      "url": "https://fidaa.h2.de/mcp"
+    }
+  }
+}
+```
+
+**OpenCode** (`opencode.json`):
+
+```json
+{
+  "mcp": {
+    "fidaa": {
+      "type": "remote",
+      "url": "https://fidaa.h2.de/mcp",
+      "enabled": true
+    }
+  }
+}
+```
+
+**Claude Desktop**: same `mcpServers` shape, in
+`~/Library/Application Support/Claude/claude_desktop_config.json`
+(macOS).
+
+### Self-hosted (stdio — full control, your LLM keys)
+
 **Claude Code / Codex** (`.mcp.json`, project dir — stdio):
 
 ```json
@@ -133,18 +172,22 @@ Try it in the MCP Inspector: `uv run mcp dev server/main.py`.
 **Running over HTTP** (e.g. from the FIDAA-DEMO compose network):
 point any streamable-http client at `http://<host>:8002/mcp`.
 
-## Exposing the HTTP endpoint publicly (roadmap)
+## Public endpoint
 
-v1 ships **internal-only** (compose network, no token). To expose it:
+The FIDAA-DEMO deployment exposes the HTTP endpoint at
+**`https://fidaa.h2.de/mcp`** (Caddy route; see "Hosted endpoint" above).
+It is deliberately **open** (no authentication) to keep it as accessible
+as possible — without exposing the LLM API itself, which is never
+reachable from outside. The public hostname is in `MCP_ALLOWED_HOSTS`
+(the SDK's 421 guard).
 
-1. Set `MCP_TOKEN` (strong random value) in the environment — the `/mcp`
-   route then requires `Authorization: Bearer <token>`; `/healthz` stays open.
-2. Add the public hostname to `MCP_ALLOWED_HOSTS` (the SDK's 421 guard).
-3. Route it in Caddy and add rate limiting in front; note that every call
-   costs embedding-API usage, and a shared token is only a weak gate —
-   the spec-compliant upgrade is OAuth 2.1 (MCP authorization spec).
-4. Publish to the [MCP registry](https://modelcontextprotocol.io/registry)
-   so agents researching digital streetwork can discover it.
+Trade-off: every call costs embedding-API usage on the hosting side.
+If traffic grows, put rate limiting in front of `/mcp` first, and/or
+switch on auth — the server already has an off-by-default `MCP_TOKEN`
+bearer gate (`server/main.py`, `secrets.env.example`), and the
+spec-compliant upgrade is OAuth 2.1 (MCP authorization spec). Longer
+term: publish to the [MCP registry](https://modelcontextprotocol.io/registry)
+so agents researching digital streetwork can discover it.
 
 ## License
 
