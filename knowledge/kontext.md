@@ -87,11 +87,19 @@ in der Web-App versteckt. Es gibt zwei Wege, dasselbe Wissen in einen anderen Ch
    Die großen Chatbots können MCP-Server verbinden (Stand: Oktober 2026; MCP ist ein offener
    Standard und die Client-Liste wächst laufend – offiziell unter
    <https://modelcontextprotocol.io/clients>):
-   * **Claude** (claude.ai, Desktop, Mobile): unter „Customize > Connectors“ (Anpassen >
-     Connectors) einen Custom-Connector anlegen und die Adresse `https://fidaa.h2.de/mcp`
+   * **Claude** (claude.ai, Desktop, Mobile): unter „Customize > Connectors > add custom Connector“ (Anpassungen >
+     Konnektoren > Benutzerdefinierten Konnektor hinzufügen) einen Custom-Connector anlegen und die Adresse `https://fidaa.h2.de/mcp`
      eintragen – ohne Review, sofort nutzbar. Offizielle Anleitung:
      <https://claude.com/docs/connectors/custom/add-unlisted>
-    * **ChatGPT**: MCP-Apps (über den öffentlichen Endpunkt) sind für ChatGPT Business und
+   * **Mistral Vibe Chat** (Mistral Vibe chat, die Plattform unter [console.mistral.ai](https://chat.mistral.ai)): "Kontext" > "Konnektoren" > "Hinzufügen" (oben rechts) > "Benutzerdefinierten Konnektor hinzufügen" den MCP-Connector mit der Adresse `https://fidaa.h2.de/mcp` registrieren. Anschließend alle Tools Erlauben.
+     und in Konversationen verwenden. Offizielle Anleitung:
+     <https://docs.mistral.ai/studio/connectors>
+   * **Perplexity**: Ähnlich zu Claude und Mistral. Oder einfach den folgenden Link anklicken: https://www.perplexity.ai/computer/connectors?connector=fidaa_5645ac4278e6400ca207e37f6b42b032
+   * **Gemini**: über „Gemini Enterprise“ (Business-Edition) als Custom-MCP-Connector anbindbar
+     (die Konfiguration erledigt die Team-Administration); die persönliche Gemini-App bietet
+     laut aktueller Doku keine Möglichkeit, eigene MCP-Server anzubinden. Offizielle Anleitung:
+     <https://support.google.com/g/answer/17106276>
+   * **ChatGPT**: MCP-Apps (über den öffentlichen Endpunkt) sind für ChatGPT Business und
       Enterprise/Edu verfügbar (Beta, wird schrittweise ausgerollt); Pro-Konten können MCP-Apps
       mit Lese-/Abrufrechten verbinden. Ein Admin aktiviert den Entwicklermodus in den
       Workspace-Einstellungen, danach wird unter „Apps → Erstellen“ die MCP-Server-Adresse
@@ -123,14 +131,6 @@ in der Web-App versteckt. Es gibt zwei Wege, dasselbe Wissen in einen anderen Ch
       ChatGPT-Business-/Enterprise-/Edu-Workspaces (dort lassen sich Skills hochladen); in
       regulären Consumer-Chats stehen diese Funktionen nicht zur Verfügung:
       <https://help.openai.com/de-de/articles/20001066-skills-in-chatgpt>
-   * **Mistral** (Mistral Studio, die Plattform unter console.mistral.ai): unter „Connectors“
-     (Public Preview) den MCP-Connector mit der Adresse `https://fidaa.h2.de/mcp` registrieren
-     und in Konversationen verwenden. Offizielle Anleitung:
-     <https://docs.mistral.ai/studio/connectors>
-   * **Gemini**: über „Gemini Enterprise“ (Business-Edition) als Custom-MCP-Connector anbindbar
-     (die Konfiguration erledigt die Team-Administration); die persönliche Gemini-App bietet
-     laut aktueller Doku keine Möglichkeit, eigene MCP-Server anzubinden. Offizielle Anleitung:
-     <https://support.google.com/g/answer/17106276>
    * Chatbots ohne MCP-Unterstützung: Weg 2.
    * Hinweis: Beim Fragenstellen über einen fremden Chatbot-Dienst werden die Suchanfragen an den
      jeweiligen Anbieter und an den FIDAA-Server übermittelt – vertrauliche Inhalte sollten nicht
