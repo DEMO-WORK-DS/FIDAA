@@ -501,7 +501,8 @@ def _register_file_routes(server: MCPServer) -> None:
     git. Announced via llms.txt, the /mcp landing page and README/SKILL.md.
 
       /mcp/llms.txt            — agent entry point (repo llms.txt)
-      /mcp/knowledge/<file>    — a complete knowledge file (KNOWLEDGE_FILES)
+      /mcp/knowledge/<file>    — a complete knowledge file (KNOWLEDGE_FILES);
+                                 short alias /mcp/<file>, e.g. /mcp/kontext.md
       /mcp/kontext/<id>.md     — one complete chapter (IDs: INDEX.md)
     """
     md = "text/markdown"  # Starlette appends "; charset=utf-8" for text/*
@@ -512,6 +513,10 @@ def _register_file_routes(server: MCPServer) -> None:
             return PlainTextResponse("llms.txt not available", status_code=404)
         return PlainTextResponse(_LLMS_TXT.read_text(encoding="utf-8"), media_type=md)
 
+    # Short alias /mcp/<file> (e.g. /mcp/kontext.md) answers exactly like
+    # /mcp/knowledge/<file>. Registered after /mcp/llms.txt, so that route
+    # still wins; {name} never matches the multi-segment /mcp/kontext/<id>.md.
+    @server.custom_route("/mcp/{name}", methods=["GET"])
     @server.custom_route("/mcp/knowledge/{name}", methods=["GET"])
     async def knowledge_file(request) -> PlainTextResponse:
         name = request.path_params["name"]
