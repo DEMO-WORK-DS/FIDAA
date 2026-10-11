@@ -1,12 +1,12 @@
 <!doctype html>
 <!-- SPDX-License-Identifier: EUPL-1.2-only -->
 <!-- Copyright (C) 2026 FIDAA contributors. See: https://eupl.eu/1.2/en/ -->
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FIDAA — MCP endpoint</title>
-  <meta name="description" content="MCP (Model Context Protocol) endpoint of FIDAA — the DEMO-WORK knowledge base on Digital Streetwork. Point your MCP client here." />
+  <meta name="description" content="FIDAA mit dem eigenen KI-Assistenten verbinden (ChatGPT, Claude, Mistral Vibe, Perplexity …) / Connect FIDAA — the DEMO-WORK knowledge base on Digital Streetwork — to your AI assistant via MCP." />
   <!-- Tab favicon: the FIDAA logo as an SVG data URI, so the icon
        works on every host without a static-file route. Keep in sync with
        assets/logo.svg (same file the demo uses as its site favicon). -->
@@ -32,6 +32,65 @@
     a { color: var(--accent); }
     code { background: rgba(128, 128, 128, .15); padding: .1em .35em; border-radius: 4px; }
     footer { margin-top: 2.5rem; font-size: .8rem; opacity: .75; text-align: center; }
+
+    /* Human guide (DE/EN): language switch, URL copy box, provider tabs.
+       Without JS both languages show and the tabs still work (CSS-only
+       radio tabs); JS only picks the language and enables the copy button. */
+    :root { --line: rgba(128, 128, 128, .35); --soft: rgba(128, 128, 128, .08); }
+    :root[data-ui="de"] .en, :root[data-ui="en"] .de { display: none; }
+    .langswitch { text-align: center; margin: 1rem 0 0; font-size: .9rem; }
+    .langswitch button {
+      font: inherit; background: none; border: 1px solid var(--line); color: inherit;
+      padding: .15rem .6rem; border-radius: 999px; cursor: pointer;
+    }
+    :root[data-ui="de"] .langswitch [data-set="de"],
+    :root[data-ui="en"] .langswitch [data-set="en"] { border-color: var(--accent); color: var(--accent); }
+    .guide { border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; margin-top: 2rem; background: var(--soft); }
+    .guide h2 { margin-top: 0; }
+    .urlbox { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin: .75rem 0 1rem; }
+    .urlbox code { font-size: 1.05rem; padding: .35rem .6rem; }
+    .urlbox button {
+      font: inherit; font-size: .9rem; cursor: pointer; border-radius: 8px;
+      border: 1px solid var(--accent); background: var(--accent); color: #fff; padding: .3rem .8rem;
+    }
+    .tabs { margin-top: 1rem; }
+    .tabs > input { position: absolute; opacity: 0; pointer-events: none; }
+    .tablist { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .75rem; }
+    .tablist label {
+      cursor: pointer; padding: .3rem .75rem; border: 1px solid var(--line);
+      border-radius: 999px; font-size: .92rem; user-select: none;
+    }
+    .panel { display: none; border-top: 1px solid var(--line); padding-top: .5rem; }
+    .panel ol { padding-left: 1.3rem; }
+    .panel li { margin: .25rem 0; }
+    .note { font-size: .88rem; opacity: .85; }
+    /* One-click import (Perplexity): a big button, not a text link. */
+    .cta {
+      display: inline-block; margin: .5rem 0 .75rem; padding: .8rem 1.4rem;
+      font-size: 1.1rem; font-weight: 700; text-decoration: none;
+      background: var(--accent); color: #fff !important; border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+    }
+    .cta:hover, .cta:focus-visible { filter: brightness(1.08); text-decoration: none; }
+    .cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    /* One rule pair per provider: highlight the chosen pill, show its panel. */
+    #t-chatgpt:checked ~ .tablist [for="t-chatgpt"], #t-claude:checked ~ .tablist [for="t-claude"],
+    #t-mistral:checked ~ .tablist [for="t-mistral"], #t-perplexity:checked ~ .tablist [for="t-perplexity"],
+    #t-gemini:checked ~ .tablist [for="t-gemini"], #t-copilot:checked ~ .tablist [for="t-copilot"],
+    #t-langdock:checked ~ .tablist [for="t-langdock"], #t-generic:checked ~ .tablist [for="t-generic"] {
+      border-color: var(--accent); background: var(--accent); color: #fff;
+    }
+    #t-chatgpt:checked ~ #p-chatgpt, #t-claude:checked ~ #p-claude, #t-mistral:checked ~ #p-mistral,
+    #t-perplexity:checked ~ #p-perplexity, #t-gemini:checked ~ #p-gemini, #t-copilot:checked ~ #p-copilot,
+    #t-langdock:checked ~ #p-langdock, #t-generic:checked ~ #p-generic { display: block; }
+    .tabs > input:focus-visible ~ .tablist label { outline: none; }
+    #t-chatgpt:focus-visible ~ .tablist [for="t-chatgpt"], #t-claude:focus-visible ~ .tablist [for="t-claude"],
+    #t-mistral:focus-visible ~ .tablist [for="t-mistral"], #t-perplexity:focus-visible ~ .tablist [for="t-perplexity"],
+    #t-gemini:focus-visible ~ .tablist [for="t-gemini"], #t-copilot:focus-visible ~ .tablist [for="t-copilot"],
+    #t-langdock:focus-visible ~ .tablist [for="t-langdock"], #t-generic:focus-visible ~ .tablist [for="t-generic"] {
+      outline: 2px solid var(--accent); outline-offset: 2px;
+    }
+    hr.split { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0 0; }
   </style>
 </head>
 <body>
@@ -48,15 +107,178 @@
       <path d="M32 22.5 Q 33.9 30.1, 41.5 32 Q 33.9 33.9, 32 41.5 Q 30.1 33.9, 22.5 32 Q 30.1 30.1, 32 22.5 Z" fill="#FFFFFF"/>
     </svg>
 
-    <h1>FIDAA <span class="sub">MCP endpoint</span></h1>
-    <p class="lead">
-      You have reached the <strong>Model Context Protocol (MCP)</strong> endpoint of
-      <a href="https://github.com/DEMO-WORK-DS/FIDAA">FIDAA</a> — the knowledge base of the
-      <a href="https://demo-work.h2.de">DEMO-WORK</a> project on Digital Streetwork.
-      This page is shown because your client sent a plain HTTP request (e.g. a
-      browser), which cannot complete the MCP handshake; an actual MCP request to
-      this URL returns the protocol response instead.
+    <h1>FIDAA <span class="sub">MCP</span></h1>
+    <!-- Human-facing intro + setup guide (DE/EN). Toggle via the buttons;
+         without JS both languages are shown. -->
+    <p class="lead de" lang="de">
+      Das ist die Adresse, über die Sie <strong>FIDAA</strong> – die geprüfte
+      Wissensdatenbank des Projekts <a href="https://demo-work.h2.de">DEMO-WORK</a>
+      zu Digital Streetwork – mit <strong>Ihrem eigenen KI-Assistenten</strong>
+      verbinden können (z.&nbsp;B. ChatGPT, Claude, Mistral Vibe oder Perplexity).
+      Ihr Assistent kann dann beim Antworten direkt in FIDAA nachschlagen.
     </p>
+    <p class="lead en" lang="en">
+      This is the address for connecting <strong>FIDAA</strong> – the verified
+      knowledge base of the <a href="https://demo-work.h2.de">DEMO-WORK</a>
+      project on Digital Streetwork – to <strong>your own AI assistant</strong>
+      (e.g. ChatGPT, Claude, Mistral Vibe or Perplexity). Your assistant can then
+      look things up in FIDAA while answering.
+    </p>
+    <p class="langswitch" aria-label="Sprache / Language">
+      <button type="button" data-set="de" lang="de">Deutsch</button>
+      <button type="button" data-set="en" lang="en">English</button>
+    </p>
+
+    <section class="guide">
+      <h2><span class="de" lang="de">So verbinden Sie FIDAA mit Ihrem KI-Assistenten</span><span class="en" lang="en">How to connect FIDAA to your AI assistant</span></h2>
+      <p>
+        <span class="de" lang="de">Sie brauchen nur diese Adresse. Fast alle Assistenten nennen die
+        passende Einstellung „Konnektoren“, „Apps“ oder „Integrationen“ – dort fügen Sie einen
+        <em>eigenen</em> Konnektor (MCP-Server) mit dieser URL hinzu. Eine Anmeldung ist nicht nötig.</span>
+        <span class="en" lang="en">All you need is this address. Most assistants call the setting
+        “Connectors”, “Apps” or “Integrations” – add a <em>custom</em> connector (MCP server)
+        with this URL there. No sign-in is required.</span>
+      </p>
+      <div class="urlbox">
+        <code class="mcp-url">https://fidaa.h2.de/mcp</code>
+        <button type="button" id="copy-url" hidden><span class="de" lang="de">Kopieren</span><span class="en" lang="en">Copy</span></button>
+      </div>
+
+      <!-- Provider switcher: CSS-only radio tabs (work without JS). Steps
+           reflect the providers' menus as of 10/2026; labels change often. -->
+      <div class="tabs">
+        <input type="radio" name="provider" id="t-chatgpt" checked>
+        <input type="radio" name="provider" id="t-claude">
+        <input type="radio" name="provider" id="t-mistral">
+        <input type="radio" name="provider" id="t-perplexity">
+        <input type="radio" name="provider" id="t-gemini">
+        <input type="radio" name="provider" id="t-copilot">
+        <input type="radio" name="provider" id="t-langdock">
+        <input type="radio" name="provider" id="t-generic">
+        <div class="tablist">
+          <label for="t-chatgpt">ChatGPT</label>
+          <label for="t-claude">Claude</label>
+          <label for="t-mistral">Mistral Vibe</label>
+          <label for="t-perplexity">Perplexity</label>
+          <label for="t-gemini">Gemini</label>
+          <label for="t-copilot">Microsoft Copilot</label>
+          <label for="t-langdock">Langdock</label>
+          <label for="t-generic"><span class="de" lang="de">Andere</span><span class="en" lang="en">Other</span></label>
+        </div>
+
+        <div class="panel" id="p-chatgpt">
+          <ol class="de" lang="de">
+            <li>Auf <a href="https://chatgpt.com">chatgpt.com</a>: <strong>Einstellungen → Apps</strong> (je nach Konto auch „Konnektoren“ oder „Plugins“) → <strong>Erweiterte Einstellungen</strong> → <strong>Entwicklermodus</strong> einschalten.</li>
+            <li><strong>App erstellen</strong> bzw. „Eigenen MCP-Server hinzufügen“: Name <code>FIDAA</code>, URL oben einfügen, Authentifizierung <strong>„Keine“</strong> → erstellen.</li>
+            <li>Im Chat über <strong>„+“</strong> den Entwicklermodus wählen und FIDAA aktivieren.</li>
+          </ol>
+          <ol class="en" lang="en">
+            <li>On <a href="https://chatgpt.com">chatgpt.com</a>: <strong>Settings → Apps</strong> (on some accounts “Connectors” or “Plugins”) → <strong>Advanced settings</strong> → turn on <strong>Developer mode</strong>.</li>
+            <li><strong>Create app</strong> / “Add custom MCP server”: name <code>FIDAA</code>, paste the URL above, authentication <strong>“None”</strong> → create.</li>
+            <li>In a chat, pick Developer mode via <strong>“+”</strong> and enable FIDAA.</li>
+          </ol>
+          <p class="note"><span class="de" lang="de">Benötigt ein bezahltes Abo (Plus, Pro, Business, Enterprise, Edu). In Business/Enterprise muss die Administration den Entwicklermodus erst freigeben.</span><span class="en" lang="en">Requires a paid plan (Plus, Pro, Business, Enterprise, Edu). In Business/Enterprise workspaces an admin has to allow Developer mode first.</span></p>
+        </div>
+
+        <div class="panel" id="p-claude">
+          <ol class="de" lang="de">
+            <li>Auf <a href="https://claude.ai">claude.ai</a>: <strong>Anpassen → Konnektoren</strong> („Customize → Connectors“) → <strong>„+ Hinzufügen“</strong> → <strong>„Eigenen Konnektor hinzufügen“</strong>.</li>
+            <li>Name <code>FIDAA</code>, URL oben einfügen → <strong>Hinzufügen</strong>.</li>
+            <li>Im Chat über <strong>„+“ → Konnektoren</strong> FIDAA einschalten.</li>
+          </ol>
+          <ol class="en" lang="en">
+            <li>On <a href="https://claude.ai">claude.ai</a>: <strong>Customize → Connectors</strong> → <strong>“+ Add”</strong> → <strong>“Add custom connector”</strong>.</li>
+            <li>Name <code>FIDAA</code>, paste the URL above → <strong>Add</strong>.</li>
+            <li>In a chat, turn FIDAA on via <strong>“+” → Connectors</strong>.</li>
+          </ol>
+          <p class="note"><span class="de" lang="de">Auch im kostenlosen Abo möglich (ein eigener Konnektor). In Team/Enterprise fügen Inhaber*innen ihn unter <strong>Organisationseinstellungen → Konnektoren</strong> hinzu; danach kann ihn jedes Mitglied verbinden. Einmal eingerichtet, funktioniert er auch in der Desktop- und Mobil-App.</span><span class="en" lang="en">Also works on the free plan (one custom connector). In Team/Enterprise, owners add it under <strong>Organization settings → Connectors</strong>; members then connect it. Once set up, it also works in the desktop and mobile apps.</span></p>
+        </div>
+
+        <div class="panel" id="p-mistral">
+          <ol class="de" lang="de">
+            <li>Auf <a href="https://chat.mistral.ai">chat.mistral.ai</a> (Mistral Vibe, früher „Le Chat“): Seitenleiste → <strong>Konnektoren</strong> (ggf. unter „Intelligence“) → <strong>„+ Konnektor hinzufügen“</strong>.</li>
+            <li>Reiter <strong>„Eigener MCP-Konnektor“</strong> („Custom MCP Connector“): Name <code>fidaa</code> (ohne Leer- und Sonderzeichen), Server-URL oben einfügen → <strong>Verbinden</strong>.</li>
+            <li>Im Chat den Konnektor FIDAA aktivieren.</li>
+          </ol>
+          <ol class="en" lang="en">
+            <li>On <a href="https://chat.mistral.ai">chat.mistral.ai</a> (Mistral Vibe, formerly “Le Chat”): side panel → <strong>Connectors</strong> (possibly under “Intelligence”) → <strong>“+ Add Connector”</strong>.</li>
+            <li>Tab <strong>“Custom MCP Connector”</strong>: name <code>fidaa</code> (no spaces or special characters), paste the server URL above → <strong>Connect</strong>.</li>
+            <li>Enable the FIDAA connector in your chat.</li>
+          </ol>
+          <p class="note"><span class="de" lang="de">Europäischer Anbieter. Im Free-, Pro- und Student-Abo darf die Kontoinhaberin bzw. der Kontoinhaber Konnektoren anlegen; in Team-Konten die Administration.</span><span class="en" lang="en">European provider. On Free, Pro and Student plans the account owner can add connectors; in team accounts an admin does it.</span></p>
+        </div>
+
+        <div class="panel" id="p-perplexity">
+          <p><a class="cta" href="https://www.perplexity.ai/computer/connectors?connector=fidaa_1bd25a3e1f7142728e4d01b23ef589e9"><span class="de" lang="de">FIDAA mit einem Klick in Perplexity übernehmen →</span><span class="en" lang="en">Add FIDAA to Perplexity in one click →</span></a></p>
+          <p class="de" lang="de">Oder von Hand:</p>
+          <p class="en" lang="en">Or manually:</p>
+          <ol class="de" lang="de">
+            <li><a href="https://www.perplexity.ai/computer/connectors">perplexity.ai/computer/connectors</a> öffnen → <strong>„+ Eigener Konnektor“</strong> („Custom connector“).</li>
+            <li>Name <code>FIDAA</code>, URL oben einfügen, ohne Authentifizierung → speichern.</li>
+            <li>Im Chat FIDAA als Quelle bzw. Konnektor auswählen.</li>
+          </ol>
+          <ol class="en" lang="en">
+            <li>Open <a href="https://www.perplexity.ai/computer/connectors">perplexity.ai/computer/connectors</a> → <strong>“+ Custom connector”</strong>.</li>
+            <li>Name <code>FIDAA</code>, paste the URL above, no authentication → save.</li>
+            <li>Select FIDAA as a source/connector in your chat.</li>
+          </ol>
+          <p class="note"><span class="de" lang="de">Eigene Konnektoren gibt es in den bezahlten Abos (Pro, Max, Enterprise).</span><span class="en" lang="en">Custom connectors are available on paid plans (Pro, Max, Enterprise).</span></p>
+        </div>
+
+        <div class="panel" id="p-gemini">
+          <ol class="de" lang="de">
+            <li>Nur in der Web-App <a href="https://gemini.google.com">gemini.google.com</a>: <strong>Einstellungen → Verbundene Apps</strong> → eigene App (MCP-Server) hinzufügen.</li>
+            <li>Name <code>FIDAA</code>, URL oben einfügen, ohne Authentifizierung → speichern.</li>
+          </ol>
+          <ol class="en" lang="en">
+            <li>Web app only, <a href="https://gemini.google.com">gemini.google.com</a>: <strong>Settings → Connected apps</strong> → add a custom app (MCP server).</li>
+            <li>Name <code>FIDAA</code>, paste the URL above, no authentication → save.</li>
+          </ol>
+          <p class="note"><span class="de" lang="de">Derzeit nur eingeschränkt verfügbar (u.&nbsp;a. privates Konto, ab 18, vorerst nicht in allen Ländern und Sprachen) – in Deutschland oft noch nicht freigeschaltet. In Gemini Business/Enterprise richtet die Administration eigene MCP-Server ein. Wenn die Option fehlt: einen anderen Assistenten aus der Liste nutzen.</span><span class="en" lang="en">Currently limited (personal account, 18+, not yet in all countries and languages) – often not yet available in Germany. In Gemini Business/Enterprise an admin sets up custom MCP servers. If the option is missing, use another assistant from this list.</span></p>
+        </div>
+
+        <div class="panel" id="p-copilot">
+          <p class="de" lang="de">In <strong>Microsoft 365 Copilot</strong> können nicht die Nutzer*innen selbst, sondern nur die <strong>IT-Administration</strong> eigene MCP-Server einbinden – als „föderierter Konnektor“ im Microsoft-365-Admin-Center oder als Tool eines Agenten in <strong>Copilot Studio</strong>. Leiten Sie Ihrer IT einfach diese Seite weiter.</p>
+          <p class="en" lang="en">In <strong>Microsoft 365 Copilot</strong>, users can't add MCP servers themselves – your <strong>IT admin</strong> can, as a “federated connector” in the Microsoft 365 admin center or as a tool of an agent in <strong>Copilot Studio</strong>. Just forward this page to your IT.</p>
+          <p class="note"><span class="de" lang="de">Für die IT: Streamable HTTP, URL oben, keine Authentifizierung, alle Tools nur lesend (<code>readOnlyHint</code>).</span><span class="en" lang="en">For IT: Streamable HTTP, URL above, no authentication, all tools read-only (<code>readOnlyHint</code>).</span></p>
+        </div>
+
+        <div class="panel" id="p-langdock">
+          <ol class="de" lang="de">
+            <li>In <a href="https://app.langdock.com">Langdock</a>: <strong>Integrationen → Integration hinzufügen → Neu erstellen</strong> → <strong>„Remote-MCP verbinden“</strong> („Connect remote MCP“).</li>
+            <li>URL oben einfügen, Authentifizierung <strong>„Keine“</strong> → Verbindung testen → Tools auswählen → speichern.</li>
+            <li>FIDAA im Chat oder in einem Agenten aktivieren.</li>
+          </ol>
+          <ol class="en" lang="en">
+            <li>In <a href="https://app.langdock.com">Langdock</a>: <strong>Integrations → Add integration → Start from scratch</strong> → <strong>“Connect remote MCP”</strong>.</li>
+            <li>Paste the URL above, authentication <strong>“None”</strong> → test the connection → pick the tools → save.</li>
+            <li>Enable FIDAA in your chat or in an agent.</li>
+          </ol>
+          <p class="note"><span class="de" lang="de">Deutsche Plattform, in vielen Organisationen im Einsatz. Je nach Workspace-Einstellung dürfen nur Admins Integrationen anlegen.</span><span class="en" lang="en">German platform used by many organisations. Depending on workspace settings, only admins may add integrations.</span></p>
+        </div>
+
+        <div class="panel" id="p-generic">
+          <p class="de" lang="de">Jeder Assistent, der <strong>eigene MCP-Server</strong> („Remote MCP“, „Custom Connector“) unterstützt, funktioniert – z.&nbsp;B. auch Open WebUI, LibreChat oder LM Studio:</p>
+          <p class="en" lang="en">Any assistant that supports <strong>custom MCP servers</strong> (“remote MCP”, “custom connector”) works – e.g. also Open WebUI, LibreChat or LM Studio:</p>
+          <ul>
+            <li><span class="de" lang="de">Transport:</span><span class="en" lang="en">Transport:</span> <strong>Streamable HTTP</strong></li>
+            <li>URL: <code class="mcp-url">https://fidaa.h2.de/mcp</code></li>
+            <li><span class="de" lang="de">Authentifizierung: keine</span><span class="en" lang="en">Authentication: none</span></li>
+          </ul>
+          <p class="note"><span class="de" lang="de">Kein MCP möglich? Viele Assistenten können stattdessen Webseiten lesen: geben Sie ihm <a href="/mcp/llms.txt">/mcp/llms.txt</a> (Wegweiser) oder <a href="/mcp/knowledge/kontext.md">/mcp/knowledge/kontext.md</a> (gesamte Wissensdatenbank).</span><span class="en" lang="en">No MCP support? Many assistants can read web pages instead: give it <a href="/mcp/llms.txt">/mcp/llms.txt</a> (guide) or <a href="/mcp/knowledge/kontext.md">/mcp/knowledge/kontext.md</a> (whole knowledge base).</span></p>
+        </div>
+      </div>
+
+      <h3><span class="de" lang="de">Danach</span><span class="en" lang="en">Afterwards</span></h3>
+      <p class="de" lang="de">Fragen Sie am besten auf Deutsch und nennen Sie FIDAA, z.&nbsp;B.: <em>„Nutze FIDAA: Welche fachlichen Standards gelten im Digital Streetwork?“</em> Für Antworten wie in der FIDAA-App können Sie dem Assistenten zusätzlich die <a href="/mcp/knowledge/systemprompt.md">Verhaltensregeln</a> geben.</p>
+      <p class="en" lang="en">Ask in German if you can and mention FIDAA, e.g.: <em>“Use FIDAA: Which professional standards apply to Digital Streetwork?”</em> To get answers like in the FIDAA app, you can also give your assistant FIDAA's <a href="/mcp/knowledge/systemprompt.md">behavior rules</a>.</p>
+      <p class="note"><span class="de" lang="de"><strong>Datenschutz:</strong> FIDAA ist offen und ohne Anmeldung nutzbar. Was Sie Ihrem Assistenten schreiben, verarbeitet weiterhin dessen Anbieter; an FIDAA gehen nur die Suchanfragen des Assistenten. Geben Sie keine personenbezogenen Daten von Adressat*innen ein. FIDAA informiert, ersetzt aber keine Beratung. Die Menüs der Anbieter ändern sich häufig – Bezeichnungen können abweichen (Stand: Oktober 2026).</span><span class="en" lang="en"><strong>Privacy:</strong> FIDAA is open, no sign-in. Whatever you type is still processed by your assistant's provider; FIDAA only receives the assistant's search queries. Don't enter personal data about clients. FIDAA informs but does not replace counselling. Provider menus change often – labels may differ (as of October 2026).</span></p>
+    </section>
+
+    <hr class="split">
+
+    <!-- Technical part for AI agents / MCP clients (English only). -->
+    <div lang="en">
 
     <h2>If you are an AI agent (or configuring an MCP client)</h2>
     <p>
@@ -110,6 +332,8 @@
       </li>
     </ul>
 
+    </div>
+
     <footer>
       FIDAA — Fachinformation Digitale Aufsuchende Arbeit ·
       <a href="https://demo-work.h2.de">DEMO-WORK</a> (h2 · Amadeu Antonio Stiftung · katho)
@@ -119,8 +343,41 @@
     // Show the URL the visitor actually reached (origin + /mcp), so the
     // instruction stays correct on other hosts/ports too; the hardcoded
     // value in the markup is the fallback for no-JS clients.
-    document.getElementById("mcp-url").textContent =
-      new URL("/mcp", location.origin).href;
+    // Opened as a file / in a preview (no http origin): keep the default.
+    const mcpUrl = location.protocol.startsWith("http")
+      ? new URL("/mcp", location.origin).href
+      : "https://fidaa.h2.de/mcp";
+    document.getElementById("mcp-url").textContent = mcpUrl;
+    document.querySelectorAll(".mcp-url").forEach((el) => { el.textContent = mcpUrl; });
+
+    // Human guide language (DE/EN): browser language by default, the
+    // visitor's choice remembered; without JS both languages are shown.
+    const root = document.documentElement;
+    function setLang(lang) {
+      root.dataset.ui = lang;
+      root.lang = lang;
+      try { localStorage.setItem("fidaa-lang", lang); } catch (e) {}
+    }
+    let saved = null;
+    try { saved = localStorage.getItem("fidaa-lang"); } catch (e) {}
+    setLang(saved || ((navigator.language || "de").toLowerCase().startsWith("de") ? "de" : "en"));
+    document.querySelectorAll(".langswitch [data-set]").forEach((b) => {
+      b.addEventListener("click", () => setLang(b.dataset.set));
+    });
+
+    // Copy button for the URL (shown only where the Clipboard API exists).
+    const copyBtn = document.getElementById("copy-url");
+    if (navigator.clipboard) {
+      copyBtn.hidden = false;
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(mcpUrl);
+          const label = copyBtn.innerHTML;
+          copyBtn.textContent = root.dataset.ui === "en" ? "Copied ✓" : "Kopiert ✓";
+          setTimeout(() => { copyBtn.innerHTML = label; }, 1500);
+        } catch (e) { /* clipboard blocked: the URL stays selectable */ }
+      });
+    }
   </script>
 </body>
 </html>
