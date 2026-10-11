@@ -76,7 +76,7 @@ Projektinformationen, vollständige Team-Profile und Kontakt (Impressum):
 
 | MCP-Oberfläche | Name                                  | Funktion                                                       |
 | -------------- | ------------------------------------- | -------------------------------------------------------------- |
-| tool           | `search_context(query, top_k?)`       | die relevantesten vollständigen Kapitel (Standard 4), mit Überschriftspfad und Kapitel-ID |
+| tool           | `search_context(query, top_k?)`       | die relevantesten vollständigen Kapitel (Standard 4), mit Überschriftspfad, Kapitel-ID und Kapitel-URL |
 | tool           | `search(query)` + `fetch(id)`         | Kapitel-IDs/Titel/URLs finden, dann ein Kapitel vollständig lesen (kompatibel mit ChatGPT Deep Research) |
 | tool           | `list_sections(collection?)`          | Kapitelstruktur (Überschriftspfade + Kapitel-IDs), pro Sammlung |
 | tool           | `search_bibliography(query, top_k?)`  | exakte Quellenangaben (Autor:in/Jahr/Titel)                    |

@@ -27,12 +27,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "server"))
 
 from splitting import (  # noqa: E402 — after sys.path setup
     KNOWLEDGE_DIR,
+    PUBLIC_URL,
     _context_chapters,
     _scan_headers,
 )
 
-# Canonical public chapter URLs (FIDAA-DEMO deployment, server PUBLIC_URL default).
-PUBLIC_URL = "https://fidaa.h2.de/mcp"
 OUT = KNOWLEDGE_DIR / "INDEX.md"
 
 

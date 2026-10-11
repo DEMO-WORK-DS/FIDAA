@@ -28,6 +28,12 @@ KNOWLEDGE_DIR = Path(
 # Optional third tool: a folder of .md files to index (demo parity: the
 # tool only exists when this is set; a missing folder disables it w/ warning).
 DOCUMENTS_PATH = os.getenv("DOCUMENTS_PATH")
+# Public base URL of the hosted FIDAA endpoint + its HTTP file routes
+# (/llms.txt, /knowledge/<file>, /kontext/<id>.md). Single definition, so
+# server results, INDEX.md and docs reference the same link. Default: the
+# public FIDAA-DEMO deployment; set PUBLIC_URL when an instance serves
+# different knowledge.
+PUBLIC_URL = os.getenv("PUBLIC_URL", "https://fidaa.h2.de/mcp").rstrip("/")
 
 
 # ---------------------------------------------------------------------------
@@ -295,6 +301,12 @@ def _slug(heading: str, max_len: int = 80) -> str:
     if len(s) > max_len:
         s = s[:max_len].rsplit("-", 1)[0]
     return s or "kapitel"
+
+
+def chapter_url(chapter_id: str) -> str:
+    """Canonical, citable URL of one complete chapter (served by the
+    server's /mcp/kontext/<id>.md route)."""
+    return f"{PUBLIC_URL}/kontext/{chapter_id}.md"
 
 
 @functools.lru_cache(maxsize=1)

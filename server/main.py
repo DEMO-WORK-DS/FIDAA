@@ -85,7 +85,9 @@ from splitting import (
     KNOWLEDGE_DIR,
     KNOWLEDGE_FILES,
     DOCUMENTS_PATH,
+    PUBLIC_URL,
     Chapter,
+    chapter_url,
     _context_chapters,
     _file_parts,
     _load_documents,
@@ -136,12 +138,9 @@ _MCP_LANDING = Path(__file__).resolve().parent.parent / "mcp-landing.html"
 # llms.txt (repo root): agent entry point, also served at /mcp/llms.txt.
 _LLMS_TXT = Path(__file__).resolve().parent.parent / "llms.txt"
 
-# Public base URL of the HTTP file routes (S10/D3), used for the canonical
-# chapter/file URLs in tool results (ChatGPT only cites results with a
-# url). Routes live under /mcp/… because the FIDAA-DEMO Caddy proxies only
-# /mcp* to this server. Default = the public FIDAA-DEMO deployment, which
-# serves the same knowledge; self-hosters with changed content set this.
-PUBLIC_URL = os.getenv("PUBLIC_URL", "https://fidaa.h2.de/mcp").rstrip("/")
+# PUBLIC_URL (hosted endpoint + HTTP file routes) is defined once in
+# splitting.py. The routes live under /mcp/… because the FIDAA-DEMO Caddy
+# proxies only /mcp* to this server.
 
 # Hits returned by the ID-only `search` tool (S3): no texts, so a few more
 # than search_context's default are cheap and help deep-research clients.
@@ -172,11 +171,6 @@ TopK = Annotated[
         ),
     ),
 ]
-
-
-def _chapter_url(chapter_id: str) -> str:
-    """Canonical URL of one complete chapter (served by /mcp/kontext/…)."""
-    return f"{PUBLIC_URL}/kontext/{quote(chapter_id)}.md"
 
 
 def _chapter_markdown(ch: Chapter) -> str:
@@ -295,7 +289,7 @@ def _register_tools(server: MCPServer) -> None:
                     SearchHit(
                         id=h.chapter_id,
                         title=h.heading_path[-1],
-                        url=_chapter_url(h.chapter_id),
+                        url=chapter_url(h.chapter_id),
                     )
                 )
         return SearchHits(results=out)
@@ -318,7 +312,7 @@ def _register_tools(server: MCPServer) -> None:
             id=ch.id,
             title=ch.heading_path[-1],
             text=ch.text,
-            url=_chapter_url(ch.id),
+            url=chapter_url(ch.id),
             metadata={
                 "heading_path": " > ".join(ch.heading_path),
                 "source": "knowledge/kontext.md",

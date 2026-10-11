@@ -29,6 +29,7 @@ from rank_bm25 import BM25Okapi
 
 from splitting import (
     _context_chapters,
+    chapter_url,
     _load_bibliography,
     _load_context,
     _load_documents,
@@ -261,8 +262,13 @@ class SearchResult(BaseModel):
         default=None,
         description=(
             "Kapitel-ID (nur Kontextdatenbank) — für fetch(id) bzw. "
-            "die Kapitel-URL /mcp/kontext/<id>.md."
+            "die Kapitel-URL."
         ),
+    )
+    # Point 4: every context hit carries its citable chapter URL.
+    url: str | None = Field(
+        default=None,
+        description="Kanonische URL des vollständigen Kapitels (nur Kontextdatenbank), zum Zitieren.",
     )
 
 
@@ -401,6 +407,9 @@ async def search_collection(name: str, query: str, top_k: int = TOP_K) -> list[S
             text=col.chunks[i],
             score=round(float(scores[i]), 6),
             chapter_id=col.chapter_ids[i] if col.chapter_ids else None,
+            url=chapter_url(col.chapter_ids[i])
+            if col.chapter_ids and col.chapter_ids[i]
+            else None,
         )
         for i in top
     ]

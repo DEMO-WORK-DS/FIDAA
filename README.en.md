@@ -78,7 +78,7 @@ Project information, full team bios and contact (imprint):
 
 | MCP surface | Name | What it does |
 |---|---|---|
-| tool | `search_context(query, top_k?)` | most relevant complete chapters (default 4), with heading path and chapter ID |
+| tool | `search_context(query, top_k?)` | most relevant complete chapters (default 4), with heading path, chapter ID and chapter URL |
 | tool | `search(query)` + `fetch(id)` | find chapter IDs/titles/URLs, then read one chapter complete (ChatGPT deep-research compatible) |
 | tool | `list_sections(collection?)` | chapter structure (heading paths + chapter IDs), per collection |
 | tool | `search_bibliography(query, top_k?)` | exact source citations (author/year/title) |
