@@ -223,17 +223,31 @@
         </div>
 
         <div class="panel" id="p-mistral">
+          <!-- Mistral Vibe (formerly Le Chat, 10/2026): field list mirrors the
+               "Benutzerdefinierten Connector hinzufügen" dialog; no custom icon. -->
           <ol class="de" lang="de">
-            <li>Auf <a href="https://chat.mistral.ai">chat.mistral.ai</a> (Mistral Vibe, früher „Le Chat“): Seitenleiste → <strong>Konnektoren</strong> (ggf. unter „Intelligence“) → <strong>„+ Konnektor hinzufügen“</strong>.</li>
-            <li>Reiter <strong>„Eigener MCP-Konnektor“</strong> („Custom MCP Connector“): Name <code>fidaa</code> (ohne Leer- und Sonderzeichen), Server-URL oben einfügen → <strong>Verbinden</strong>.</li>
-            <li>Im Chat den Konnektor FIDAA aktivieren.</li>
+            <li>Auf <a href="https://chat.mistral.ai/connections">chat.mistral.ai/connections</a> gehen – oder in der Seitenleiste <strong>Kontext → Konnektoren</strong>.</li>
+            <li><strong>„+ Connector hinzufügen“</strong> → oben rechts <strong>„Benutzerdefinierten Connector hinzufügen“</strong>.</li>
+            <li>Die Felder wie unten ausfüllen, Authentifizierung auf <strong>„Automatisch erkennen“</strong> lassen → <strong>„Connector hinzufügen“</strong>.</li>
+            <li>Im Chat den Connector FIDAA aktivieren.</li>
           </ol>
           <ol class="en" lang="en">
-            <li>On <a href="https://chat.mistral.ai">chat.mistral.ai</a> (Mistral Vibe, formerly “Le Chat”): side panel → <strong>Connectors</strong> (possibly under “Intelligence”) → <strong>“+ Add Connector”</strong>.</li>
-            <li>Tab <strong>“Custom MCP Connector”</strong>: name <code>fidaa</code> (no spaces or special characters), paste the server URL above → <strong>Connect</strong>.</li>
+            <li>Go to <a href="https://chat.mistral.ai/connections">chat.mistral.ai/connections</a> – or in the side panel <strong>Context → Connectors</strong>.</li>
+            <li><strong>“+ Add connector”</strong> → top right <strong>“Add custom connector”</strong>.</li>
+            <li>Fill in the fields as below, leave authentication on <strong>“Auto-detect”</strong> → <strong>“Add connector”</strong>.</li>
             <li>Enable the FIDAA connector in your chat.</li>
           </ol>
-          <p class="note"><span class="de" lang="de">Europäischer Anbieter. Im Free-, Pro- und Student-Abo darf die Kontoinhaberin bzw. der Kontoinhaber Konnektoren anlegen; in Team-Konten die Administration.</span><span class="en" lang="en">European provider. On Free, Pro and Student plans the account owner can add connectors; in team accounts an admin does it.</span></p>
+          <dl class="fields">
+            <dt><span class="de" lang="de">Connector-Name</span><span class="en" lang="en">Connector name</span></dt>
+            <dd><code>FIDAA</code> <button type="button" class="copybtn" data-copy="FIDAA" hidden><span class="de" lang="de">Kopieren</span><span class="en" lang="en">Copy</span></button></dd>
+            <dt>Server</dt>
+            <dd><code class="mcp-url">https://fidaa.h2.de/mcp</code> <button type="button" class="copybtn" data-copy-url hidden><span class="de" lang="de">Kopieren</span><span class="en" lang="en">Copy</span></button></dd>
+            <dt><span class="de" lang="de">Beschreibung (optional)</span><span class="en" lang="en">Description (optional)</span></dt>
+            <dd><span class="longval" lang="en">Fachinformation für Digitale Aufsuchende Arbeit (Digital Streetwork). Provides easy access to information about Digital Streetwork written, organized and individually verified by german scientific experts of the field.</span> <button type="button" class="copybtn" data-copy="Fachinformation für Digitale Aufsuchende Arbeit (Digital Streetwork). Provides easy access to information about Digital Streetwork written, organized and individually verified by german scientific experts of the field." hidden><span class="de" lang="de">Kopieren</span><span class="en" lang="en">Copy</span></button></dd>
+            <dt><span class="de" lang="de">Authentifizierung</span><span class="en" lang="en">Authentication</span></dt>
+            <dd><strong><span class="de" lang="de">Automatisch erkennen</span><span class="en" lang="en">Auto-detect</span></strong></dd>
+          </dl>
+          <p class="note"><span class="de" lang="de">Europäischer Anbieter (früher „Le Chat“). Im Free-, Pro- und Student-Abo darf die Kontoinhaberin bzw. der Kontoinhaber Connectoren anlegen; in Team-Konten die Administration. Ein eigenes Icon lässt sich nicht festlegen.</span><span class="en" lang="en">European provider (formerly “Le Chat”). On Free, Pro and Student plans the account owner can add connectors; in team accounts an admin does it. A custom icon can't be set.</span></p>
         </div>
 
         <div class="panel" id="p-perplexity">
