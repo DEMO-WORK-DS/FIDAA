@@ -282,15 +282,25 @@
         </div>
 
         <div class="panel" id="p-gemini">
+          <!-- Gemini (10/2026), from English-UI screenshots: only the URL is
+               needed; German labels are the expected translations. -->
           <ol class="de" lang="de">
-            <li>Nur in der Web-App <a href="https://gemini.google.com">gemini.google.com</a>: <strong>Einstellungen → Verbundene Apps</strong> → eigene App (MCP-Server) hinzufügen.</li>
-            <li>Name <code>FIDAA</code>, URL oben einfügen, ohne Authentifizierung → speichern.</li>
+            <li><a href="https://gemini.google.com/apps">gemini.google.com/apps</a> öffnen – oder unten links über das Zahnrad <strong>„Verbundene Apps“</strong> („Connected apps“).</li>
+            <li>Oben auf <strong>„Benutzerdefinierte Apps“</strong> („Custom apps“) klicken bzw. ganz nach unten scrollen.</li>
+            <li>Die URL unten in das Feld „https://your-app-link.com/mcp“ einfügen → <strong>„Weiter“</strong> („Next“) → im Fenster „Mit einem MCP-Server verbinden“ erneut <strong>„Weiter“</strong>.</li>
+            <li>Risikohinweis anhaken („I understand and accept …“) → <strong>„Verbinden“</strong> („Connect“).</li>
           </ol>
           <ol class="en" lang="en">
-            <li>Web app only, <a href="https://gemini.google.com">gemini.google.com</a>: <strong>Settings → Connected apps</strong> → add a custom app (MCP server).</li>
-            <li>Name <code>FIDAA</code>, paste the URL above, no authentication → save.</li>
+            <li>Open <a href="https://gemini.google.com/apps">gemini.google.com/apps</a> – or via the gear icon (bottom left) → <strong>“Connected apps”</strong>.</li>
+            <li>Click <strong>“Custom apps”</strong> at the top, or scroll to the bottom.</li>
+            <li>Paste the URL below into the “https://your-app-link.com/mcp” field → <strong>“Next”</strong> → in the “Connect to an MCP server” dialog <strong>“Next”</strong> again.</li>
+            <li>Tick “I understand and accept the security and privacy risks …” → <strong>“Connect”</strong>.</li>
           </ol>
-          <p class="note"><span class="de" lang="de">Derzeit nur eingeschränkt verfügbar (u.&nbsp;a. privates Konto, ab 18, vorerst nicht in allen Ländern und Sprachen) – in Deutschland oft noch nicht freigeschaltet. In Gemini Business/Enterprise richtet die Administration eigene MCP-Server ein. Wenn die Option fehlt: einen anderen Assistenten aus der Liste nutzen.</span><span class="en" lang="en">Currently limited (personal account, 18+, not yet in all countries and languages) – often not yet available in Germany. In Gemini Business/Enterprise an admin sets up custom MCP servers. If the option is missing, use another assistant from this list.</span></p>
+          <dl class="fields">
+            <dt><span class="de" lang="de">MCP-Server-URL</span><span class="en" lang="en">MCP server URL</span></dt>
+            <dd><code class="mcp-url">https://fidaa.h2.de/mcp</code> <button type="button" class="copybtn" data-copy-url hidden><span class="de" lang="de">Kopieren</span><span class="en" lang="en">Copy</span></button></dd>
+          </dl>
+          <p class="note"><span class="de" lang="de">Nur in der Web-App möglich; danach auch in der Gemini-App nutzbar. Bei Konten von Schule/Arbeit (Google Workspace) entscheidet ggf. die Administration, ob eigene Apps erlaubt sind.</span><span class="en" lang="en">Web app only; afterwards also usable in the Gemini mobile app. For work/school accounts (Google Workspace) an admin may decide whether custom apps are allowed.</span></p>
         </div>
 
         <div class="panel" id="p-copilot">
