@@ -90,6 +90,16 @@
     #t-langdock:focus-visible ~ .tablist [for="t-langdock"], #t-generic:focus-visible ~ .tablist [for="t-generic"] {
       outline: 2px solid var(--accent); outline-offset: 2px;
     }
+    /* ChatGPT field list: label + copyable value per dialog field. */
+    dl.fields { display: grid; grid-template-columns: max-content 1fr; gap: .45rem .9rem; margin: .75rem 0; align-items: baseline; }
+    dl.fields dt { font-weight: 600; font-size: .92rem; }
+    dl.fields dd { margin: 0; overflow-wrap: anywhere; }
+    dl.fields .longval { display: block; padding: .35rem .6rem; border-radius: 6px; background: rgba(128, 128, 128, .15); font-size: .92rem; margin-bottom: .3rem; }
+    .copybtn {
+      font: inherit; font-size: .8rem; cursor: pointer; margin-left: .3rem; padding: .1rem .5rem;
+      border-radius: 6px; border: 1px solid var(--accent); background: none; color: var(--accent);
+    }
+    @media (max-width: 560px) { dl.fields { grid-template-columns: 1fr; } dl.fields dd { margin-bottom: .4rem; } }
     hr.split { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0 0; }
   </style>
 </head>
@@ -133,10 +143,10 @@
       <h2><span class="de" lang="de">So verbinden Sie FIDAA mit Ihrem KI-Assistenten</span><span class="en" lang="en">How to connect FIDAA to your AI assistant</span></h2>
       <p>
         <span class="de" lang="de">Sie brauchen nur diese Adresse. Fast alle Assistenten nennen die
-        passende Einstellung „Konnektoren“, „Apps“ oder „Integrationen“ – dort fügen Sie einen
+        passende Einstellung „Konnektoren“, „Plugins“, „Apps“ oder „Integrationen“ – dort fügen Sie einen
         <em>eigenen</em> Konnektor (MCP-Server) mit dieser URL hinzu. Eine Anmeldung ist nicht nötig.</span>
         <span class="en" lang="en">All you need is this address. Most assistants call the setting
-        “Connectors”, “Apps” or “Integrations” – add a <em>custom</em> connector (MCP server)
+        “Connectors”, “Plugins”, “Apps” or “Integrations” – add a <em>custom</em> connector (MCP server)
         with this URL there. No sign-in is required.</span>
       </p>
       <div class="urlbox">
@@ -167,17 +177,35 @@
         </div>
 
         <div class="panel" id="p-chatgpt">
+          <!-- ChatGPT (10/2026): custom MCP servers are added under Plugins.
+               No one-click link: FIDAA's plugin page is not public (yet).
+               The field list mirrors ChatGPT's "add custom MCP server" dialog. -->
           <ol class="de" lang="de">
-            <li>Auf <a href="https://chatgpt.com">chatgpt.com</a>: <strong>Einstellungen → Apps</strong> (je nach Konto auch „Konnektoren“ oder „Plugins“) → <strong>Erweiterte Einstellungen</strong> → <strong>Entwicklermodus</strong> einschalten.</li>
-            <li><strong>App erstellen</strong> bzw. „Eigenen MCP-Server hinzufügen“: Name <code>FIDAA</code>, URL oben einfügen, Authentifizierung <strong>„Keine“</strong> → erstellen.</li>
-            <li>Im Chat über <strong>„+“</strong> den Entwicklermodus wählen und FIDAA aktivieren.</li>
+            <li><a href="https://chatgpt.com/plugins">chatgpt.com/plugins</a> öffnen oder links auf <strong>Plugins</strong> klicken → oben rechts <strong>„Hinzufügen“</strong> → <strong>„Benutzerdefinierten MCP-Server hinzufügen“</strong>.</li>
+            <li>Die Felder wie unten ausfüllen – bei <strong>Authentifizierung</strong> „OAuth“ auf <strong>„Keine Authentifizierung“</strong> umstellen.</li>
+            <li>„Ich habe das verstanden und möchte weitermachen“ anhaken → <strong>„Als Plugin erstellen“</strong>.</li>
+            <li>Im Chat FIDAA über <strong>„+“</strong> aktivieren.</li>
           </ol>
           <ol class="en" lang="en">
-            <li>On <a href="https://chatgpt.com">chatgpt.com</a>: <strong>Settings → Apps</strong> (on some accounts “Connectors” or “Plugins”) → <strong>Advanced settings</strong> → turn on <strong>Developer mode</strong>.</li>
-            <li><strong>Create app</strong> / “Add custom MCP server”: name <code>FIDAA</code>, paste the URL above, authentication <strong>“None”</strong> → create.</li>
-            <li>In a chat, pick Developer mode via <strong>“+”</strong> and enable FIDAA.</li>
+            <li>Open <a href="https://chatgpt.com/plugins">chatgpt.com/plugins</a> or click <strong>Plugins</strong> on the left → <strong>“Add”</strong> (top right) → <strong>“Add custom MCP server”</strong>.</li>
+            <li>Fill in the fields as below – under <strong>Authentication</strong> switch “OAuth” to <strong>“No authentication”</strong>.</li>
+            <li>Tick “I understand and want to continue” → <strong>“Create as plugin”</strong>.</li>
+            <li>Enable FIDAA in a chat via <strong>“+”</strong>.</li>
           </ol>
-          <p class="note"><span class="de" lang="de">Benötigt ein bezahltes Abo (Plus, Pro, Business, Enterprise, Edu). In Business/Enterprise muss die Administration den Entwicklermodus erst freigeben.</span><span class="en" lang="en">Requires a paid plan (Plus, Pro, Business, Enterprise, Edu). In Business/Enterprise workspaces an admin has to allow Developer mode first.</span></p>
+          <dl class="fields">
+            <dt><span class="de" lang="de">Icon (optional)</span><span class="en" lang="en">Icon (optional)</span></dt>
+            <dd><!-- assets/fidaa-logo-256.png, inlined (256×256, 2.6 KB; ChatGPT allows PNG ≤ 10 KB) -->
+              <a download="fidaa-logo.png" href="data:image/png;base64,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"><span class="de" lang="de">Logo herunterladen (PNG)</span><span class="en" lang="en">Download logo (PNG)</span></a></dd>
+            <dt>Name</dt>
+            <dd><code>FIDAA</code> <button type="button" class="copybtn" data-copy="FIDAA" hidden><span class="de" lang="de">Kopieren</span><span class="en" lang="en">Copy</span></button></dd>
+            <dt><span class="de" lang="de">Beschreibung (optional)</span><span class="en" lang="en">Description (optional)</span></dt>
+            <dd><span class="longval" lang="en">Fachinformation für Digitale Aufsuchende Arbeit (Digital Streetwork). Provides easy access to information about Digital Streetwork written, organized and individually verified by german scientific experts of the field.</span> <button type="button" class="copybtn" data-copy="Fachinformation für Digitale Aufsuchende Arbeit (Digital Streetwork). Provides easy access to information about Digital Streetwork written, organized and individually verified by german scientific experts of the field." hidden><span class="de" lang="de">Kopieren</span><span class="en" lang="en">Copy</span></button></dd>
+            <dt><span class="de" lang="de">Verbindung → Server-URL</span><span class="en" lang="en">Connection → Server URL</span></dt>
+            <dd><code class="mcp-url">https://fidaa.h2.de/mcp</code> <button type="button" class="copybtn" data-copy-url hidden><span class="de" lang="de">Kopieren</span><span class="en" lang="en">Copy</span></button></dd>
+            <dt><span class="de" lang="de">Authentifizierung</span><span class="en" lang="en">Authentication</span></dt>
+            <dd><strong><span class="de" lang="de">Keine Authentifizierung</span><span class="en" lang="en">No authentication</span></strong></dd>
+          </dl>
+          <p class="note"><span class="de" lang="de">Funktioniert auch im kostenlosen Konto. In Business-/Enterprise-Workspaces muss die Administration eigene Plugins ggf. erst freigeben.</span><span class="en" lang="en">Also works on the free plan. In Business/Enterprise workspaces an admin may have to allow custom plugins first.</span></p>
         </div>
 
         <div class="panel" id="p-claude">
@@ -365,17 +393,23 @@
       b.addEventListener("click", () => setLang(b.dataset.set));
     });
 
-    // Copy button for the URL (shown only where the Clipboard API exists).
-    const copyBtn = document.getElementById("copy-url");
-    if (navigator.clipboard) {
-      copyBtn.hidden = false;
-      copyBtn.addEventListener("click", async () => {
+    // Copy buttons (shown only where the Clipboard API exists): the URL box
+    // and the ChatGPT field list (data-copy = text, data-copy-url = URL).
+    function wireCopy(btn, text) {
+      btn.hidden = false;
+      btn.addEventListener("click", async () => {
         try {
-          await navigator.clipboard.writeText(mcpUrl);
-          const label = copyBtn.innerHTML;
-          copyBtn.textContent = root.dataset.ui === "en" ? "Copied ✓" : "Kopiert ✓";
-          setTimeout(() => { copyBtn.innerHTML = label; }, 1500);
-        } catch (e) { /* clipboard blocked: the URL stays selectable */ }
+          await navigator.clipboard.writeText(text);
+          const label = btn.innerHTML;
+          btn.textContent = root.dataset.ui === "en" ? "Copied ✓" : "Kopiert ✓";
+          setTimeout(() => { btn.innerHTML = label; }, 1500);
+        } catch (e) { /* clipboard blocked: the text stays selectable */ }
+      });
+    }
+    if (navigator.clipboard) {
+      wireCopy(document.getElementById("copy-url"), mcpUrl);
+      document.querySelectorAll(".copybtn").forEach((btn) => {
+        wireCopy(btn, btn.hasAttribute("data-copy-url") ? mcpUrl : btn.dataset.copy);
       });
     }
   </script>
