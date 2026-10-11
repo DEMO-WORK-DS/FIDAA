@@ -77,17 +77,17 @@
     #t-chatgpt:checked ~ .tablist [for="t-chatgpt"], #t-claude:checked ~ .tablist [for="t-claude"],
     #t-mistral:checked ~ .tablist [for="t-mistral"], #t-perplexity:checked ~ .tablist [for="t-perplexity"],
     #t-gemini:checked ~ .tablist [for="t-gemini"], #t-copilot:checked ~ .tablist [for="t-copilot"],
-    #t-langdock:checked ~ .tablist [for="t-langdock"], #t-generic:checked ~ .tablist [for="t-generic"] {
+    #t-generic:checked ~ .tablist [for="t-generic"] {
       border-color: var(--accent); background: var(--accent); color: #fff;
     }
     #t-chatgpt:checked ~ #p-chatgpt, #t-claude:checked ~ #p-claude, #t-mistral:checked ~ #p-mistral,
     #t-perplexity:checked ~ #p-perplexity, #t-gemini:checked ~ #p-gemini, #t-copilot:checked ~ #p-copilot,
-    #t-langdock:checked ~ #p-langdock, #t-generic:checked ~ #p-generic { display: block; }
+    #t-generic:checked ~ #p-generic { display: block; }
     .tabs > input:focus-visible ~ .tablist label { outline: none; }
     #t-chatgpt:focus-visible ~ .tablist [for="t-chatgpt"], #t-claude:focus-visible ~ .tablist [for="t-claude"],
     #t-mistral:focus-visible ~ .tablist [for="t-mistral"], #t-perplexity:focus-visible ~ .tablist [for="t-perplexity"],
     #t-gemini:focus-visible ~ .tablist [for="t-gemini"], #t-copilot:focus-visible ~ .tablist [for="t-copilot"],
-    #t-langdock:focus-visible ~ .tablist [for="t-langdock"], #t-generic:focus-visible ~ .tablist [for="t-generic"] {
+    #t-generic:focus-visible ~ .tablist [for="t-generic"] {
       outline: 2px solid var(--accent); outline-offset: 2px;
     }
     /* ChatGPT field list: label + copyable value per dialog field. */
@@ -163,7 +163,6 @@
         <input type="radio" name="provider" id="t-perplexity">
         <input type="radio" name="provider" id="t-gemini">
         <input type="radio" name="provider" id="t-copilot">
-        <input type="radio" name="provider" id="t-langdock">
         <input type="radio" name="provider" id="t-generic">
         <div class="tablist">
           <label for="t-chatgpt">ChatGPT</label>
@@ -171,8 +170,7 @@
           <label for="t-mistral">Mistral Vibe</label>
           <label for="t-perplexity">Perplexity</label>
           <label for="t-gemini">Gemini</label>
-          <label for="t-copilot">Microsoft Copilot</label>
-          <label for="t-langdock">Langdock</label>
+          <label for="t-copilot">MS Copilot</label>
           <label for="t-generic"><span class="de" lang="de">Andere</span><span class="en" lang="en">Other</span></label>
         </div>
 
@@ -307,20 +305,6 @@
           <p class="de" lang="de">In <strong>Microsoft 365 Copilot</strong> können nicht die Nutzer*innen selbst, sondern nur die <strong>IT-Administration</strong> eigene MCP-Server einbinden – als „föderierter Konnektor“ im Microsoft-365-Admin-Center oder als Tool eines Agenten in <strong>Copilot Studio</strong>. Leiten Sie Ihrer IT einfach diese Seite weiter.</p>
           <p class="en" lang="en">In <strong>Microsoft 365 Copilot</strong>, users can't add MCP servers themselves – your <strong>IT admin</strong> can, as a “federated connector” in the Microsoft 365 admin center or as a tool of an agent in <strong>Copilot Studio</strong>. Just forward this page to your IT.</p>
           <p class="note"><span class="de" lang="de">Für die IT: Streamable HTTP, URL oben, keine Authentifizierung, alle Tools nur lesend (<code>readOnlyHint</code>).</span><span class="en" lang="en">For IT: Streamable HTTP, URL above, no authentication, all tools read-only (<code>readOnlyHint</code>).</span></p>
-        </div>
-
-        <div class="panel" id="p-langdock">
-          <ol class="de" lang="de">
-            <li>In <a href="https://app.langdock.com">Langdock</a>: <strong>Integrationen → Integration hinzufügen → Neu erstellen</strong> → <strong>„Remote-MCP verbinden“</strong> („Connect remote MCP“).</li>
-            <li>URL oben einfügen, Authentifizierung <strong>„Keine“</strong> → Verbindung testen → Tools auswählen → speichern.</li>
-            <li>FIDAA im Chat oder in einem Agenten aktivieren.</li>
-          </ol>
-          <ol class="en" lang="en">
-            <li>In <a href="https://app.langdock.com">Langdock</a>: <strong>Integrations → Add integration → Start from scratch</strong> → <strong>“Connect remote MCP”</strong>.</li>
-            <li>Paste the URL above, authentication <strong>“None”</strong> → test the connection → pick the tools → save.</li>
-            <li>Enable FIDAA in your chat or in an agent.</li>
-          </ol>
-          <p class="note"><span class="de" lang="de">Deutsche Plattform, in vielen Organisationen im Einsatz. Je nach Workspace-Einstellung dürfen nur Admins Integrationen anlegen.</span><span class="en" lang="en">German platform used by many organisations. Depending on workspace settings, only admins may add integrations.</span></p>
         </div>
 
         <div class="panel" id="p-generic">
