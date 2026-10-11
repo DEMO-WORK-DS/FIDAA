@@ -9,12 +9,22 @@ the DEMO-WORK project on **Digital Streetwork** (aufsuchende soziale Arbeit
 in digitalen Räumen) in `knowledge/*.md` (German, CC-BY-SA-4.0), plus a thin MCP
 server (`server/`, three small modules; `main.py` = entry point + assembly)
 that exposes it as tools
-(`search_context`, `search_bibliography`, `list_sections`, optional
-`search_documents`), prompts (FIDAA system prompt + the 9 chat starters)
-and resources (full context-chapter texts, `fidaa://context/…`). Any AI agent can use
-this knowledge via the MCP server (stdio or streamable-http) or by reading
-`knowledge/` directly (see `skills/fidaa/SKILL.md` for the agent-facing
-usage guide).
+(`search_context`, `search` + `fetch`, `list_sections`,
+`search_bibliography`, `read_knowledge_file`, optional `search_documents`),
+prompts (FIDAA system prompt + the 9 chat starters), resources (complete
+chapters `fidaa://context/…`, complete files `fidaa://knowledge/…`) and,
+in HTTP mode, plain file routes (`/mcp/llms.txt`, `/mcp/knowledge/<file>`,
+`/mcp/kontext/<id>.md`). Any AI agent can use this knowledge via the MCP
+server (stdio or streamable-http), via HTTP, or by reading `knowledge/`
+directly — entry points `llms.txt` and the generated `knowledge/INDEX.md`
+(see `skills/fidaa/SKILL.md` for the agent-facing usage guide).
+
+**Whole-file ingestion is a supported option**: an agent with a large
+enough context window may ingest `knowledge/kontext.md` completely
+(≈ 525k chars ≈ 150–175k tokens; all files ≈ 205k tokens) instead of
+searching — via the file, `read_knowledge_file` (parts ≤ ~60k chars,
+split only at chapter boundaries), `fidaa://knowledge/kontext.md`, or
+`https://fidaa.h2.de/mcp/knowledge/kontext.md`.
 
 ## Commands
 
@@ -28,11 +38,28 @@ usage guide).
 - Public endpoint (FIDAA-DEMO deployment): `https://fidaa.h2.de/mcp`
   (open, no auth) — see README, section "Öffentlicher Endpunkt". Bare
   GETs without an MCP session get the `mcp-landing.html` info page.
+- Regenerate the chapter map after every change to `knowledge/kontext.md`
+  or `bibliography.md`: `uv run scripts/build_index.py` (check only:
+  `--check`, exits 1 when `knowledge/INDEX.md` is stale). Never edit
+  `INDEX.md` by hand.
 - No test suite exists. Verify changes by starting the server and checking
   the startup log (index build line) plus a manual tool call (Inspector or
   any MCP client).
 
 ## Conventions
+
+- **Never split an H2 chapter** of `knowledge/kontext.md` when handing
+  knowledge to a model. Each `##` chapter is human-organized and complete;
+  fragments can mislead. Every access path (search hits, `fetch`,
+  resources, `read_knowledge_file` parts, HTTP) delivers whole chapters.
+  Do not introduce sub-chapter chunking.
+- Chapter IDs are slugs of the H2 heading (`_slug` / `_context_chapters`
+  in `server/splitting.py`); renaming a heading changes its ID and URL.
+- BM25 tokenization (`_tokenize` in `server/index.py`) is deliberately
+  plain words + NFKC/casefold + umlaut folding — stemmers, stopwords and
+  compound splitting were measured and did not help. Re-measure with the
+  retrieval eval (branch `retrieval-eval`, kept out of main) before
+  changing it.
 
 - `secrets.env` (gitignored) is the single source of truth for secrets
   (`LLM_URL`, `LLM_KEY`, `EMBEDDING_MODEL`, `MCP_TOKEN`, …).

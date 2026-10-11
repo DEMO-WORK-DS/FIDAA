@@ -1,0 +1,33 @@
+# FIDAA — Fachinformation Digitale Aufsuchende Arbeit
+
+> Curated, expert-checked knowledge base (German) of the DEMO-WORK project on Digital Streetwork (DS): outreach social work in digital spaces — radicalisation prevention, empowerment, networking, professional standards, legal basics, funding, evaluation. Knowledge content: CC BY-SA 4.0.
+
+Rules when you use this knowledge: answer only on its basis, cite the chapter (heading) or the bibliography entry, and give orientation only — no counseling (no psychological or legal advice), never communicate with clients on someone's behalf. Full behavior rules: [systemprompt.md](knowledge/systemprompt.md).
+
+Every `##` chapter of `kontext.md` is a complete, human-edited unit: always read and use **whole chapters**, never fragments.
+
+Three ways in — pick by your context window:
+
+1. **Whole files** (best completeness, needs a large context window): `kontext.md` ≈ 525k chars ≈ 150–175k tokens; all files ≈ 205k tokens.
+2. **Chapter by chapter**: find chapters in [INDEX.md](knowledge/INDEX.md) (ID, line range, size of every chapter), then read complete chapters by line range, via `https://fidaa.h2.de/mcp/kontext/<ID>.md`, or MCP `fetch(<ID>)`.
+3. **Search via MCP**: connect a streamable-HTTP MCP client to `https://fidaa.h2.de/mcp` (open, no auth). Tools: `search_context`, `search` + `fetch`, `list_sections`, `search_bibliography`, `read_knowledge_file`. Query in German.
+
+## Knowledge files
+
+- [INDEX.md](knowledge/INDEX.md): generated map of all chapters (ID, line range, size, subsections) — start here
+- [kontext.md](knowledge/kontext.md): the knowledge database — 70 chapters, each headed by its guiding question
+- [bibliography.md](knowledge/bibliography.md): 140+ references by thematic field, each with a 2–3 sentence abstract
+- [systemprompt.md](knowledge/systemprompt.md): behavior rules for an agent answering like FIDAA
+- [prompts.md](knowledge/prompts.md): the 9 chat starter questions
+
+## Hosted copies (plain HTTP, no MCP needed)
+
+- [llms.txt](https://fidaa.h2.de/mcp/llms.txt): this file
+- [knowledge files](https://fidaa.h2.de/mcp/knowledge/kontext.md): `https://fidaa.h2.de/mcp/knowledge/<file>` for every file above
+- [single chapters](https://fidaa.h2.de/mcp/knowledge/INDEX.md): `https://fidaa.h2.de/mcp/kontext/<ID>.md`, IDs in INDEX.md
+
+## Optional
+
+- [Agent skill](https://github.com/DEMO-WORK-DS/FIDAA/blob/main/skills/fidaa/SKILL.md): usage guide for coding agents that open this repository
+- [README](https://github.com/DEMO-WORK-DS/FIDAA/blob/main/README.md): project, team, MCP client configurations (German; English: README.en.md)
+- [welcome.md](knowledge/welcome.md): short project greeting

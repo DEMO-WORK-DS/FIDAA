@@ -19,6 +19,11 @@ einfach, indem der Agent `knowledge/` liest.
   - `systemprompt.md` (Geprüfte Anweisungen für einen KI-Agenten)  
   - `prompts.md` (9 Chat-Startervorlagen)
   - `welcome.md` (Kurze Projektübersicht)
+  - `INDEX.md` (generierte Kapitelübersicht: ID, Zeilenbereich und Größe
+    jedes Kapitels — erzeugt mit `uv run scripts/build_index.py`)
+- `llms.txt` — Einstiegspunkt für KI-Agenten ([llms.txt](https://llmstxt.org)):
+  welche Datei wofür, und die drei Zugangswege (ganze Dateien, einzelne
+  Kapitel, Suche per MCP).
 - `server/main.py` — schlanker MCP-Server auf dem offiziellen `mcp`-SDK
   v2 (`MCPServer`), stdio + streamable-http, In-Memory-Hybridindex
   (numpy-Cosine + BM25, RRF-Fusion), bei jedem Start neu aufgebaut (keine
@@ -69,16 +74,25 @@ Projektinformationen, vollständige Team-Profile und Kontakt (Impressum):
 
 ## Was der MCP-Server bietet
 
-| MCP-Oberfläche | Name                         | Funktion                                             |
-| -------------- | ---------------------------- | ---------------------------------------------------- |
-| tool           | `search_context(query)`      | die 4 relevantesten Passagen, mit Überschriftspfaden |
-| tool           | `search_bibliography(query)` | exakte Quellenangaben (Autor:in/Jahr/Titel)          |
-| tool           | `search_documents(query)`    | optional — nur wenn `DOCUMENTS_PATH` gesetzt ist     |
-| tool           | `list_sections(collection?)` | Kapitelstruktur (Überschriftspfade), pro Sammlung    |
-| prompt         | `fidaa_systemprompt`         | FIDAAs Verhaltensregeln (System-Prompt)              |
-| prompt         | `fidaa_starter_1…9`          | die 9 Chat-Startervorlagen, versandbereit            |
-| resource       | `fidaa://context/<H1>/<H2>`  | vollständige Kapiteltexte (nur Kontext)              |
-| route          | `GET /healthz`               | Index-Status (nur HTTP-Modus)                        |
+| MCP-Oberfläche | Name                                  | Funktion                                                       |
+| -------------- | ------------------------------------- | -------------------------------------------------------------- |
+| tool           | `search_context(query, top_k?)`       | die relevantesten vollständigen Kapitel (Standard 4), mit Überschriftspfad, Kapitel-ID und Kapitel-URL |
+| tool           | `search(query)` + `fetch(id)`         | Kapitel-IDs/Titel/URLs finden, dann ein Kapitel vollständig lesen (kompatibel mit ChatGPT Deep Research) |
+| tool           | `list_sections(collection?)`          | Kapitelstruktur (Überschriftspfade + Kapitel-IDs), pro Sammlung |
+| tool           | `search_bibliography(query, top_k?)`  | exakte Quellenangaben (Autor:in/Jahr/Titel)                    |
+| tool           | `read_knowledge_file(file?, part?)`   | eine ganze Wissensdatei lesen (in Teilen, nur an Kapitelgrenzen getrennt) |
+| tool           | `search_documents(query, top_k?)`     | optional — nur wenn `DOCUMENTS_PATH` gesetzt ist               |
+| prompt         | `fidaa_systemprompt`                  | FIDAAs Verhaltensregeln (System-Prompt)                        |
+| prompt         | `fidaa_starter_1…9`                   | die 9 Chat-Startervorlagen, versandbereit                      |
+| resource       | `fidaa://context/<H1>/<H2>`           | vollständige Kapiteltexte (nur Kontext)                        |
+| resource       | `fidaa://knowledge/<datei>`           | vollständige Wissensdateien                                    |
+| route          | `GET /mcp/llms.txt`, `/mcp/knowledge/<datei>`, `/mcp/kontext/<id>.md` | dieselben Inhalte als einfache HTTP-Dateien (nur HTTP-Modus) |
+| route          | `GET /healthz`                        | Index-Status (nur HTTP-Modus)                                  |
+
+Alle Tools sind als nur lesend markiert (`readOnlyHint`). **Ein Kapitel
+(`##`-Abschnitt) wird nie zerteilt:** Jeder Weg — Suchtreffer, `fetch`,
+Ressource, Dateiteil, HTTP — liefert vollständige Kapitel, weil jedes
+Kapitel eine von Menschen redigierte, in sich vollständige Einheit ist.
 
 Abfragen auf **Deutsch** liefern die besten Treffer.
 
@@ -186,6 +200,31 @@ Endpunkt" oben). Er ist bewusst **offen** (ohne Authentifizierung), um ihn
 so zugänglich wie möglich zu halten.
 
 Damit kann FIDAA als Werkzeug ganz einfach durch angabe des Links in andere KI-Agenten integriert werden.
+
+## Direkter Zugriff ohne MCP / ganze Wissensbasis aufnehmen
+
+Agenten müssen nicht suchen: Wer ein ausreichend großes Kontextfenster hat,
+kann die **gesamte Wissensbasis** aufnehmen — `kontext.md` hat ca. 525.000
+Zeichen (≈ 150–175k Tokens), alle Dateien zusammen ≈ 205k Tokens. Das
+vermeidet Lücken durch verpasste Suchtreffer. Wege:
+
+- im Repo: `knowledge/kontext.md` lesen (Kapitelübersicht vorher in
+  `knowledge/INDEX.md`, Einstieg über `llms.txt`);
+- per HTTP (ohne MCP-Client): `https://fidaa.h2.de/mcp/llms.txt`,
+  `https://fidaa.h2.de/mcp/knowledge/kontext.md`, einzelne Kapitel unter
+  `https://fidaa.h2.de/mcp/kontext/<ID>.md` (IDs in `INDEX.md`);
+- per MCP: Ressource `fidaa://knowledge/kontext.md` oder Tool
+  `read_knowledge_file` (liefert große Dateien in Teilen ≤ ~60k Zeichen,
+  damit Client-Limits für Tool-Ausgaben nicht greifen).
+
+Die Dateien werden vom Server zur Laufzeit aus `knowledge/` ausgeliefert,
+nicht doppelt im Repo abgelegt. Die Kapitel-URLs nutzt der Server auch als
+zitierbare Quellen-URL in `search`/`fetch`; für eine eigene Instanz mit
+geändertem Wissen `PUBLIC_URL` setzen (Standard: `https://fidaa.h2.de/mcp`).
+
+**Dieses Repo in einem Agenten öffnen:** Die `.mcp.json` im Wurzelverzeichnis
+verbindet Claude Code (und kompatible Clients) automatisch mit dem
+gehosteten Endpunkt.
 
 ## Lizenz
 
