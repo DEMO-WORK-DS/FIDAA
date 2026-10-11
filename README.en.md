@@ -17,8 +17,13 @@ by the agent reading `knowledge/`.
   - `kontext.md` (context database)
   - `bibliography.md` (140+ references to external sources)
   - `systemprompt.md` (checked instructions for an AI agent)
-  - `prompts.md` (8 chat starters)
+  - `prompts.md` (9 chat starters)
   - `welcome.md` (short project overview)
+  - `INDEX.md` (generated chapter map: ID, line range and size of every
+    chapter — built with `uv run scripts/build_index.py`)
+- `llms.txt` — entry point for AI agents ([llms.txt](https://llmstxt.org)):
+  which file is for what, and the three ways in (whole files, single
+  chapters, MCP search).
 - `server/main.py` — thin MCP server on the official `mcp` SDK v2
   (`MCPServer`), stdio + streamable-http, in-memory hybrid index (numpy
   cosine + BM25, RRF fusion) rebuilt on startup (no database, no LangChain).
@@ -73,14 +78,23 @@ Project information, full team bios and contact (imprint):
 
 | MCP surface | Name | What it does |
 |---|---|---|
-| tool | `search_context(query)` | 4 most relevant passages, with heading paths |
-| tool | `search_bibliography(query)` | exact source citations (author/year/title) |
-| tool | `search_documents(query)` | optional — only if `DOCUMENTS_PATH` is set |
-| tool | `list_sections(collection?)` | chapter structure (heading paths), per collection |
+| tool | `search_context(query, top_k?)` | most relevant complete chapters (default 4), with heading path and chapter ID |
+| tool | `search(query)` + `fetch(id)` | find chapter IDs/titles/URLs, then read one chapter complete (ChatGPT deep-research compatible) |
+| tool | `list_sections(collection?)` | chapter structure (heading paths + chapter IDs), per collection |
+| tool | `search_bibliography(query, top_k?)` | exact source citations (author/year/title) |
+| tool | `read_knowledge_file(file?, part?)` | read a whole knowledge file (in parts, split only at chapter boundaries) |
+| tool | `search_documents(query, top_k?)` | optional — only if `DOCUMENTS_PATH` is set |
 | prompt | `fidaa_systemprompt` | FIDAA's behavior rules (system prompt) |
 | prompt | `fidaa_starter_1…9` | the 9 chat starters, ready to send |
 | resource | `fidaa://context/<H1>/<H2>` | full chapter texts (context only) |
+| resource | `fidaa://knowledge/<file>` | complete knowledge files |
+| route | `GET /mcp/llms.txt`, `/mcp/knowledge/<file>`, `/mcp/kontext/<id>.md` | the same content as plain HTTP files (HTTP mode only) |
 | route | `GET /healthz` | index state (HTTP mode only) |
+
+All tools are marked read-only (`readOnlyHint`). **A chapter (`##`
+section) is never split:** every path — search hit, `fetch`, resource,
+file part, HTTP — delivers complete chapters, because each chapter is a
+human-edited, self-contained unit.
 
 Queries in **German** give the best recall.
 
@@ -189,6 +203,30 @@ as possible.
 
 This makes FIDAA easy to integrate as a tool into other AI agents —
 simply by providing the link.
+
+## Direct access without MCP / ingesting the whole knowledge base
+
+Agents don't have to search: with a large enough context window they can
+ingest the **entire knowledge base** — `kontext.md` is ~525,000 characters
+(≈ 150–175k tokens), all files together ≈ 205k tokens. This avoids gaps
+from missed search hits. Ways in:
+
+- in the repo: read `knowledge/kontext.md` (chapter map first in
+  `knowledge/INDEX.md`, entry point `llms.txt`);
+- over HTTP (no MCP client needed): `https://fidaa.h2.de/mcp/llms.txt`,
+  `https://fidaa.h2.de/mcp/knowledge/kontext.md`, single chapters at
+  `https://fidaa.h2.de/mcp/kontext/<ID>.md` (IDs in `INDEX.md`);
+- over MCP: resource `fidaa://knowledge/kontext.md` or tool
+  `read_knowledge_file` (returns large files in parts of ≤ ~60k characters
+  so client tool-output limits don't truncate them).
+
+The server generates these files from `knowledge/` at runtime; they are not
+duplicated in the repo. It also uses the chapter URLs as citable source URLs
+in `search`/`fetch`; self-hosted instances with changed knowledge set
+`PUBLIC_URL` (default `https://fidaa.h2.de/mcp`).
+
+**Opening this repo in an agent:** the root `.mcp.json` connects Claude Code
+(and compatible clients) to the hosted endpoint automatically.
 
 ## License
 

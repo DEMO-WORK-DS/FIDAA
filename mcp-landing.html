@@ -65,12 +65,35 @@
       connect a streamable-HTTP MCP client to
       <code id="mcp-url">https://fidaa.h2.de/mcp</code> (open — no
       authentication required).
-      You get the tools <code>search_context</code>,
-      <code>search_bibliography</code>, <code>list_sections</code>
+      You get the tools <code>search_context</code>, <code>search</code> +
+      <code>fetch</code> (chapter IDs ↔ complete chapters),
+      <code>list_sections</code>, <code>search_bibliography</code>,
+      <code>read_knowledge_file</code> (whole files)
       (+ optionally <code>search_documents</code>), FIDAA's prompts, and the
-      chapter resources <code>fidaa://context/…</code>.
+      resources <code>fidaa://context/…</code> (chapters) and
+      <code>fidaa://knowledge/…</code> (complete files).
       Formulate queries in <strong>German</strong> for best recall.
     </p>
+
+    <!-- S10: announce the plain-HTTP knowledge files to agents that can
+         fetch URLs but do not speak MCP (served by server/main.py). Links
+         are root-relative (/mcp/…), so they work on any host. -->
+    <h2>No MCP client? Read the knowledge directly</h2>
+    <p>
+      The same knowledge is available as plain Markdown over HTTP
+      (CC BY-SA 4.0). Every <code>##</code> chapter is a complete,
+      human-edited unit — always use whole chapters, never fragments.
+    </p>
+    <ul>
+      <li><a href="/mcp/llms.txt"><code>/mcp/llms.txt</code></a> — entry point for agents (<a href="https://llmstxt.org">llms.txt</a>)</li>
+      <li><a href="/mcp/knowledge/INDEX.md"><code>/mcp/knowledge/INDEX.md</code></a> — every chapter with ID, line range and size: find chapters here first</li>
+      <li><code>/mcp/kontext/&lt;ID&gt;.md</code> — one complete chapter by ID</li>
+      <li><a href="/mcp/knowledge/kontext.md"><code>/mcp/knowledge/kontext.md</code></a> — the whole knowledge database
+        (≈ 525k characters, ≈ 150–175k tokens): ingest it completely if your context window allows</li>
+      <li><a href="/mcp/knowledge/bibliography.md"><code>/mcp/knowledge/bibliography.md</code></a>,
+        <a href="/mcp/knowledge/systemprompt.md"><code>/mcp/knowledge/systemprompt.md</code></a> (behavior rules),
+        <a href="/mcp/knowledge/prompts.md"><code>/mcp/knowledge/prompts.md</code></a></li>
+    </ul>
 
     <h2>Project &amp; skill</h2>
     <ul>
