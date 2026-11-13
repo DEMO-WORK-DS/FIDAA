@@ -64,7 +64,9 @@
     .panel ol { padding-left: 1.3rem; }
     .panel li { margin: .25rem 0; }
     .note { font-size: .88rem; opacity: .85; }
-    /* One-click import (Perplexity): a big button, not a text link. */
+    /* One-click import (Perplexity): a big button, not a text link.
+       Dormant since 11/2026 (button commented out in #p-perplexity);
+       kept for one-line re-enablement. */
     .cta {
       display: inline-block; margin: .5rem 0 .75rem; padding: .8rem 1.4rem;
       font-size: 1.1rem; font-weight: 700; text-decoration: none;
@@ -249,20 +251,28 @@
         </div>
 
         <div class="panel" id="p-perplexity">
+          <!-- One-click import disabled (11/2026): Perplexity's security
+               changes broke the pre-registered connector link for users
+               other than the one who created it. To re-enable: register a
+               new connector at perplexity.ai/computer/connectors, restore
+               this button (and the .cta CSS in the header) with the new
+               ?connector=… URL. -->
+          <!--
           <p><a class="cta" href="https://www.perplexity.ai/computer/connectors?connector=fidaa_1bd25a3e1f7142728e4d01b23ef589e9"><span class="de" lang="de">FIDAA mit einem Klick in Perplexity übernehmen →</span><span class="en" lang="en">Add FIDAA to Perplexity in one click →</span></a></p>
-          <p class="de" lang="de">Oder von Hand:</p>
-          <p class="en" lang="en">Or manually:</p>
+          -->
+          <p class="de" lang="de">Von Hand:</p>
+          <p class="en" lang="en">Manually:</p>
           <!-- Field list mirrors Perplexity's "Benutzerdefinierten Konnektor
-               hinzufügen" dialog (10/2026; icon ≤ 128 KB). -->
+               hinzufügen" dialog (11/2026; icon ≤ 128 KB). -->
           <ol class="de" lang="de">
             <li><a href="https://www.perplexity.ai/computer/connectors">perplexity.ai/computer/connectors</a> öffnen → oben rechts <strong>„+ Benutzerdefinierter Konnektor“</strong> → <strong>„MCP-Konnektor hinzufügen“</strong>.</li>
-            <li>Die Felder wie unten ausfüllen („Erweitert“ unverändert lassen).</li>
+            <li>Die Felder wie unten ausfüllen; dabei unter <strong>„Erweitert“</strong> → <strong>„Authentifizierung“</strong> auf <strong>„Keine“</strong> stellen (sonst erwartet Perplexity OAuth und der Konnektor bricht ab).</li>
             <li>„Ich verstehe, dass benutzerdefinierte Konnektoren Risiken mit sich bringen können“ anhaken → <strong>„Hinzufügen“</strong>.</li>
             <li>Im Chat FIDAA als Konnektor auswählen.</li>
           </ol>
           <ol class="en" lang="en">
             <li>Open <a href="https://www.perplexity.ai/computer/connectors">perplexity.ai/computer/connectors</a> → top right <strong>“+ Custom connector”</strong> → <strong>“Add MCP connector”</strong>.</li>
-            <li>Fill in the fields as below (leave “Advanced” unchanged).</li>
+            <li>Fill in the fields as below; while doing so, under <strong>“Advanced”</strong> → <strong>“Authentication”</strong> switch to <strong>“None”</strong> (otherwise Perplexity expects OAuth and the connector fails).</li>
             <li>Tick “I understand that custom connectors can carry risks” → <strong>“Add”</strong>.</li>
             <li>Select FIDAA as a connector in your chat.</li>
           </ol>
